@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>ValidationApp</display-name>  
+  <context-param>
+  	<param-name>developer</param-name>
+  	<param-value>Ekwinder</param-value>
+  </context-param>
+  <servlet>
+  	<servlet-name>Home</servlet-name>
+  	<servlet-class>com.itvedant.HomeServlet</servlet-class>
+  	<init-param>
+  		<param-name>colors</param-name>
+  		<param-value>Red,Blue,Green,Yellow,Purple,Pink,Orange,Indigo,Violet,Grey,BlueGreen,GreenYellow,LightGreen,LightBlue,Cyan,Magenta,Maroon</param-value>
+  	</init-param>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Home</servlet-name>
+  	<url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>home</welcome-file>
+  </welcome-file-list>
+</web-app>
