@@ -1,0 +1,729 @@
+Web siters were static files,html pages, grphics and various other files.
+A web app it is dynamic.
+When a web appl prog runs on a server, it might not be containing proper html page.
+that page might be a java apli, it might be a python appli,
+So these applications are executed in the server and in the response,
+these pages are going to generate your html page,
+and this html page will be sent back to ur client.
+
+Ur client, that is ur browser in response,
+is always going to get an html page only.
+
+Sometimes, when we r sending a req from client to server, we
+might also send some data, so server will also read the data 
+and tries to figure out reponse based on given data.
+
+In web applications -- client sends a req,
+req is handed to a web server.
+Inside a web server there is an application which is always running.
+the name of this appli  is web container.
+This web container contains objects of all the servlets
+that we are going to create which the user will be requesting.
+
+That is the user req servelet, the servelet generates reponse,
+
+Now every req that comes to a web container
+is treated as a thread. So the amount of load coming on the processor reduces,
+And its not going to create a thread because it has a thread pool,
+
+Servlets--
+it runs within web container. In our case it is,
+Java Platform Enterprise Edition.
+The web container implements Application Programming Interface.
+
+Everything related to servelet is controlled by a web container.
+i.e. creating objects of the servelet,calling method on the servelet,
+giving back the response from the servelet,
+everything is done by a web container.
+
+So we as a programmer will only create a servelt.
+We will not create new instance of servelet,
+we will not call any method of the servelet,
+So web container performs initial processing,
+and selects the intended servelet to handle the req.
+It controls the entire lifecycle of servelet.
+browser send http request to ur web server,
+web server gives it to web container,
+Now based on the url, web container search for the
+servelet that u r trying to req,
+if it finds that servelt,
+it tries to process that servelet,
+handover the ersponse back, the response mostly will be html page.
+which web container hands over to web server and which gives response to a client.
+
+
+
+Based on the url,web con
+
+
+
+
+
+
+
+requirement--
+tomcat server installation -- donot install native one-- Tomcat 9.0.87 Released-- download-- binary distribution-- for core-- zip file-- extract-
+-- start eclipse ide-- select workspace-- now first we need to add tomcat server and keep it ready--
+so, windows-->show view-->servers--> close welcome window--->in the below part where output comes--> u can see servers
+now click on the link no servers are available. Click this link to creATE new server--> in the dialog box click on apache server-->
+--> the version that we r working is 9-->next-->
+path where apache is installed, select that folder
+i.e. D:\learning\apache-tomcat-9.0.87
+
+now to start the server-- right click on Tomcat v9.0 Server at localhost[Stopped, Republish]-- start
+
+server is active now, and within server web container is also active.
+
+Now to test if we can reach our server , we will do little test--
+now we r performing this activity on localhost only.
+apache tomcat listens on server 8080--
+
+So on the browser , write http://localhost:8080/
+
+we r getting error page sent by apache tomcat.
+
+error is ther becoz it doesnt know what to do on /.
+
+now, going back to ide, double click on link--
+and overview page will open related to server--
+
+in that u have server location-- > click on use tomcat installation
+--> press ctrl+s-- i.e. save it--> and restart server
+
+now refresh http://localhost:8080/-- entire homepage is set.
+
+now, creating 1st project-- file-->new-->dynamic web project-->
+project name-- FirstApp-->finish
+
+if u will expand this folder u will get required libraries.
+
+for us the most important is firstapp->java resources-> src/main/java
+All my servelet files will be inside it.
+the same path we have in firstapp->src->main->java-- all the java files
+will be part of this folder, all html files will be
+part of webapp.
+
+In order to run this application-->right click on FirstApp-->
+-->run as server becoz i dont want to run this application
+as standalone. I want to run it on the server.-->dialogue box-->
+choose an existing server--see localhost written there--->tomcat v9.0-- started
+-- click always use this server -->finish-->restart now-->ok
+
+so we uploaded our entire project on server now.
+see the url--
+
+http://localhost:8080/FirstApp/
+
+
+Now u can goto preferences--->u can even change browser-->
+just search web browser--> use external web browser--> chrome
+-->apply and close-->now run firstapp-> it will open on the chrome browser
+
+Now we will design homepage--
+
+homepage is page for url /
+
+now see deployment descriptor firstapp-->
+welcome pages-->
+now the entire lifecycle of web server, we r not going to 
+control it. So we need to provide some settings to my
+web container that are related to application so that 
+it knows what is to be done with this project.
+
+for eg our home page if we r giving as /,
+so which page is to be opened under which servlet,
+that complete mapping we will be doing under
+deployment descriptor, everything which data will go.
+
+This deployment descriptor file is an xml file.
+The name of this file is web.xml
+
+Deployment Descriptor is XML file used by web container to define servlets match up with which URLs. It will also specify the landing page for the root of the application
+
+Now to add the deployment descriptor file--
+right click on first app-->java ee tools-->generate deployment descrptor stub--see under wen-inf folder
+
+this is the xml file we need.
+
+Now when u open this web.xml file-- below there are 2 tabs--
+design and source
+
+now right click web.xml-->open with generic text editor
+
+Any 1 of the files present here can be your homepage.
+
+So lets say index.html--
+so how to add html file within ur project--
+
+right click on project-->new html file--> Name it index.html
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+<h3>Welcome to first web application</h3>
+</body>
+</html>
+
+save it and now run ur project
+
+--
+now lets say if I delete index.html file
+right click on source to create new html file,
+name it default.html
+
+this is also my welcome file,
+
+I can even create my own html welcome file.
+
+from web.xml u can delete <welcome-file> part
+and write--
+
+home.html--
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h2 style="color:blue;">Home Page</h2>
+</body>
+</html>
+
+
+web.xml is like--
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>FirstApp</display-name>
+  <welcome-file-list>
+    <welcome-file>home.html</welcome-file>
+  </welcome-file-list>
+</web-app>
+
+
+now those who have installed eclipse java ee they donot need to do this otherwise-- search eclipse java ee on browser-- and install windowsx86
+
+Tomserver is an application server.
+
+
+
+
+Now in eclipse create a new workspace-- aj_try-- once it is launched u will see welcome msg with eclipse ide for enterprise java and web developers
+
+---
+
+now understanding http --
+
+goto browser-->wikipedia india-->search-->right click inspect-->network-->name---> see request url--> request method is get-->
+scroll down and see the response, accept (in accept it tells what all pages it can accept, so it can accept https)
+
+now going to response-- the entire html page is sent back as response.
+
+so while sending a request we follow a http protocol which we can see under headers, also remote addr-- addr of the m/c is going to server m/c
+
+
+
+---
+
+Deployment Descriptor is XML file used by web container to define servlets match up with which URLs. It will also specify the landing page for the root of the application
+
+javax.servlet ===> package that contains the interfaces and the classes required for implementing the Servlet
+
+javax.servlet.http ===> package that contains interfaces and the class required to handle the HTTP request and response
+
+Ways to Create a Servlet:
+Create a normal java, and then:
+
+1. implements Servlet interface: parent interface of any Servlet class
+
+2. extends GenericServlet class: abstract class that implements the Servlet interface. Only one method is declared abstract in this class and that is service() method
+
+3. extends HttpServlet class
+
+
+
+So now, come back on FirstApp-->right click-->new--->normal java class
+
+
+package com.itvedant;
+
+class name-- FirstServlet
+
+it will not contain main method.
+
+package com.itvedant;
+
+import javax.servlet.Servlet;
+
+public class FirstServlet implements Servlet{
+ 
+}
+
+now we r getting error becoz Servlet is an interface, we need to override methods.
+So, right click on the error and override all the methods.
+
+package com.itvedant;
+
+import java.io.IOException;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+public class FirstServlet implements Servlet{
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public ServletConfig getServletConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServletInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void init(ServletConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void service(ServletRequest arg0, ServletResponse arg1) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		
+	}
+ 
+}
+
+Now along with this we will understand lifecycle of servlet
+
+------------------------------------------------
+Life Cycle of the Servlet -- the compilation of the code is done by in-built jdk compiler only.
+So this step creates .class file and then lifecycle starts-- i.e.
+
+
+1. Load servlet class ===> load the class file of the servlet in the web container
+2. Create Servlet class instance ===> Web container will create the instance/object of the servlet class, only one object of the servlet will be created
+3. Call init() method ===> web container will call the init() method defined in the servlet class, this method is called only once.
+4. Call service() method ===> web container will call the service() method only when someone requests for the servlet. This method will be called for every request on the servlet. This method will contain the code for the response generation.
+5. Call destroy() method ===> web container will call destroy() method when the instance/object of the servlet class is destroyed.
+
+So when we override Servlet method, in the above code , 3 methods got overridden, init , service and destroy method.
+
+
+package com.itvedant;
+
+import java.io.IOException;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+public class FirstServlet implements Servlet{
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		System.out.println("Destroy() method called");
+		
+	}
+
+	@Override
+	public ServletConfig getServletConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getServletInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void init(ServletConfig arg0) throws ServletException {
+		// TODO Auto-generated method stub
+		System.out.println("Init() Method called");
+		
+	}
+
+	@Override
+	public void service(ServletRequest arg0, ServletResponse arg1) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		System.out.println("Service() method called");
+		
+	}
+ 
+}
+
+
+now if we want our servlet to be executed-- in order to map the req to the servlet,
+we need to map the Servlet Class with some url using--
+1. web.xml
+2. annotation 
+
+i.e.
+In order to request the Servlet we need to map the Servlet class with the some URL using:
+
+1. web.xml
+
+2. annotation
+
+So in web.xml file, we will add some codes--
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>FirstApp</display-name>
+  <welcome-file-list>
+    <welcome-file>home.html</welcome-file>
+  </welcome-file-list>
+  <servlet>
+	<servlet-name>First</servlet-name>  -------------------------- this name is not restricted to servlet name. It can be anything
+	<servlet-class>com.itvedant.FirstServlet</servlet-class> ------ this is restircted. It can be exact path only.
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>First</servlet-name>
+	<url-pattern>/first</url-pattern>
+  </servlet-mapping>
+</web-app>
+
+now right click on firstapp, run as server--
+in the output we will see init() called, service() called
+
+http://localhost:8080/FirstApp/first
+
+we will not get any output becoz we have not get 
+
+now as many times will click our url, service() gets executed
+
+Now goto server tab from prompt-- right click-- clean-- restart-- now when we clean our server destroy() gets called.
+
+Now if u want an html response-- in FirstServlet.java
+
+	
+	@Override
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		System.out.println("Service() method called");
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.print("First Servlet");
+		
+	}
+ 
+now http://localhost:8080/FirstApp/first -- o/p first servlet
+
+out.print("<h3 style=color:green;> First Servlet</h3>");--- we can make following changes.
+
+http://localhost:8080/FirstApp/first----- see the o/p. Internally it is creating this html page.
+
+
+
+---
+Now generic servlet class-- servlet interface is the parent interface of any servlet class.
+Now when we r implementing servlet class it is forcing us to overwrite all the servlet methods. What if
+i dont want to overwrite , then its not possible using only Servlet interface.
+
+So we use GenericServlet class.
+
+extends GenericServlet class: abstract class that implements the Servlet interface. 
+Only one method is declared abstract in this class and that is service() method
+
+So creating new java class under same pkg--
+
+Now itis not going to implement my interface instead it is going to extend my GenericServlet class.
+
+it forces u to override only service().
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.GenericServlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+public class SecondServlet extends GenericServlet{
+
+	@Override
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.print("<h4>Servlet using GenericServlet Class</h4>");
+		}
+
+}
+
+
+now we will do url mapping--
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>FirstApp</display-name>
+  <welcome-file-list>
+    <welcome-file>home.html</welcome-file>
+  </welcome-file-list>
+  <servlet>
+	<servlet-name>First</servlet-name>
+	<servlet-class>com.itvedant.FirstServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>First</servlet-name>
+	<url-pattern>/first</url-pattern>
+  </servlet-mapping>
+  <servlet>
+	<servlet-name>Second</servlet-name>
+	<servlet-class>com.itvedant.SecondServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>Second</servlet-name>
+	<url-pattern>/second</url-pattern>
+  </servlet-mapping>
+	
+  
+</web-app>
+
+http://localhost:8080/FirstApp/second--
+
+Now creating anchor tab for first and second in home.html--
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h2 style="color:blue;">Home Page</h2>
+	<a href="first"> Go to First Servlet</a>
+	<br/>
+	<a href="second">Go to Second Servlet</a>
+</body>
+</html>
+
+
+
+----------------------------------------------
+
+3. extends HttpServlet class: this class contains the method for handling each HTTP request separately 
+eg. for post request it has doPost() method
+for get request it has doGet() method
+Ther are many diifer types of http servlet requests.http get, http post, delte, update reqs
+Now all these methods are categorized by service(). There is no categorization.
+
+
+
+HTTP Get and Post
+
+HTTP GET
+
+1. Length restriction ===> limited
+2. Retrieve the data from the URL (header part of the URL)
+3. Visible to everyone
+4. Not secure
+5. Can be bookmarked
+
+HTTP POST
+
+1. No restriction on the length
+2. Retrieve the data from the request body
+3. Since the data is part of request body, data is not visible to everyone
+4. More secure and is encrepted
+5. Cannot be bookmarked
+
+So now in our home page, we will create 1 form-- home.html--
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h2 style="color:blue;">Home Page</h2>
+	<a href="first"> Go to First Servlet</a>
+	<br/>
+	<a href="second">Go to Second Servlet</a>
+	<form action="first" method="get">
+	Name:
+	<input type="text" name="name"/>
+	<input type="submit" value="OK"/>
+	
+	
+	</form>
+</body>
+</html>
+
+and firstServlet.html
+
+only change in service() rest all same--
+
+	@Override
+	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		System.out.println("Service() method called");
+		res.setContentType("text/html");
+		PrintWriter out = res.getWriter();
+		out.print("<h3 style=color:green;> First Servlet</h3>");
+		out.print("<h4>Servlet using Servlet Interface</h4>");
+		
+	}
+
+run as server--
+
+If i will put name and click ok-- req is going to 1st servlet.
+
+now if we will change our url in home.html to second then it will goto our second servlet.
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h2 style="color:blue;">Home Page</h2>
+	<a href="first"> Go to First Servlet</a>
+	<br/>
+	<a href="second">Go to Second Servlet</a>
+	<form action="second" method="get"> ---------------- change this to second
+	Name:
+	<input type="text" name="name"/>
+	<input type="submit" value="OK"/>
+	
+	
+	</form>
+</body>
+</html>
+
+refresh url-- and put name.
+
+now irrespective of <form action="second" method="get"> get or post same method will be called.
+
+in the get we will see data going through url but in post we will not.
+
+But many a times we will have a scenario where for get req we want to do some task, for post some.
+Currently service() is only handling.
+
+So we have a 3rd type of servlet-- the http servlet class contains a method for handling each type
+of servlet req. 
+
+so we have extends HttpServlet class: this class contains the method for handling each HTTP request separately 
+eg. for post request it has doPost() method
+for get request it has doGet() method
+
+so here 1st the req will come to service method only but then req will be transffered based on the req to 
+diff methods.
+
+So create new servlet class ThirdServlet
+
+
+1st doget()-- it gets 2 parameters.
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class ThirdServlet extends HttpServlet {
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html");
+		
+			PrintWriter out =resp.getWriter();
+			out.print("<h4> Servlet using Http Servlet Class </h4>");
+			out.print("<h5>Get Method</h5>");
+		
+		
+		
+	}
+
+}
+
+
+
+
+now we r going map in web.xml --
+
+ <servlet>
+	<servlet-name>Third</servlet-name>
+	<servlet-class>com.itvedant.ThirdServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>Third</servlet-name>
+	<url-pattern>/third</url-pattern>
+  </servlet-mapping>
+
+--
+now in home.html--
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h2 style="color:blue;">Home Page</h2>
+	<a href="first"> Go to First Servlet</a>
+	<br/>
+	<a href="second">Go to Second Servlet</a>
+	<form action="third" method="get"> ---------------------
+	Name:
+	<input type="text" name="name"/>
+	<input type="submit" value="OK"/>
+	
+	
+	</form>
+</body>
+</html>
+
+--
+
+what if it changes to post method--
+
+lets say if in home.html we change it to post(), then the req will goto service() and after that it will give error
+
+So if i want to handle post method also, then-- add in ThirdServlet.java
+
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html");
+		
+			PrintWriter out =resp.getWriter();
+			out.print("<h4> Servlet using Http Servlet Class </h4>");
+			out.print("<h5>Post Method</h5>");
+		
+		
+		
+	}
+
+refresh browser and see.
+
