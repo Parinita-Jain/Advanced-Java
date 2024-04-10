@@ -727,3 +727,508 @@ So if i want to handle post method also, then-- add in ThirdServlet.java
 
 refresh browser and see.
 
+--
+
+Servlet part 2--
+
+Servlte is a normal java class and to make a java class
+act like a servlet class we need to either implement
+an interface called servlet interface which has methods like init, destroy service.
+There are 2 more methods which are part of this but most imp are these 3 only.
+Service method handles any type of the request,
+that will be coming from the client. 
+so when the req reach the server, the server handover this req to web container,
+the web container is going to call the service().
+
+The no. of instance of 1 servelet class that can exist at 1 time is only 1.
+So, even if it is 100 req , all these req will be, handled by a single
+servlet instance.
+
+So the .java file is created, which is compiled
+as a .class file, this will be handed over to web
+container, where the life cycle of the servlet class
+is controlled by the web container.
+---
+
+So now we will restructure home.html nicely--
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+<style>
+	td{
+	 padding:10px;
+	}
+
+</style>
+</head>
+<body>
+		<form action="third" method="get">
+		<table>
+			<tr>
+				<td>Name:</td>
+				<td><input type="text" name="name"/></td>
+			</tr>
+			<tr>
+				<td>Marks:</td>
+				<td><input type="number" name="marks"/></td>
+			</tr>
+			<tr>
+				<td>Color:</td>
+				<td>
+					<select name="color">
+						<option value="none">.....</option>
+						<option>Red</option>
+						<option>Blue</option>
+						<option>Green</option>
+						<option>Pink</option>
+						<option>Purple</option>
+						<option>Grey</option>
+						<option>Violet</option>
+						<option>Indigo</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="OK"/></td>
+				<td><input type="reset"/></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
+
+now run app-- go to browser-- submit some values-- all the values are going in the url--
+sO THE DATA Is going in the form of a key value pair.
+So whatever we r sending in the url is going in the form of a req.
+i.e. the name of the field will remain same. But the value will vary.
+
+So next we will read tis value and present that value.
+
+So next what we r going to do is in the dopost method we will call doGet().
+
+So we will sent content response text as html.
+and we will generate the response by creating the out object . These 2 steps we have alredy done.
+
+So now in ThirdServlet.java--
+
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class ThirdServlet extends HttpServlet {
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html");
+		
+			PrintWriter out =resp.getWriter();
+			String name = req.getParameter("name");
+			String marks = req.getParameter("marks");
+			String color = req.getParameter("color");
+		
+			out.print("Hello, "+name);
+			out.print("<br/>You have scored : "+marks);
+		
+	}
+	
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		doGet(req,resp);
+		
+		
+		
+	}
+}
+
+
+run--- put values in browser
+
+
+Now lets say I want to present this entire output as some color in the browser,
+So whatever color is selected, 
+
+so make following changes--
+
+			out.print("<p style='color:" + color + "';>");			
+			out.print("Hello, "+name);
+			out.print("<br/>You have scored : "+marks);			
+			out.print("</p>");
+		
+Now lets say we want to do some calc on this amrks value,
+lets suppose we want to divide marks by 500 to calc what is the aggregate.
+For this marks value has to be in proper foramt first and not in String type.
+
+getParameter() returns value in Stirng form.We will do typecasting. thirdservlet.java
+
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		resp.setContentType("text/html");
+		
+			PrintWriter out =resp.getWriter();
+			String name = req.getParameter("name");
+			float marks = Float.parseFloat(req.getParameter("marks"));
+			String color = req.getParameter("color");
+			float aggregate = (marks/500)*100;
+			
+			out.print("<p style='color:" + color + "';>");			
+			out.print("Hello, "+name);
+			out.print("<br/>You have scored : "+aggregate + "%");			
+			out.print("</p>");
+		
+	}
+
+
+--
+
+Now lets say I don't want to send empty string or missing value.
+And if value is not sent the eroor msg should come
+
+So we will not create complete form by using html page, instead by HttpServlet.
+
+We can setup our servlet as homepage.
+
+So we will create a new servlet--  So now we will see validation part.
+
+new-->dynamic web project-->project name-->ValidationApp
+
+now, right click validation app->new ->java class->package-- com.itvedant , file name-- HomeServlet
+
+package com.itvedant;
+
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class HomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doGet(req, resp);
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(req, resp);
+	}
+}
+
+
+this is waht we have done till now.
+
+Now, if the req is coming directly to HomeServlet, so we will need to set url.
+For that we will need web.xml file.
+
+Now right click on project folder-->java ee tools-->generate deployment descriptor stub--
+so now in src->web-inf folder, web.xml file is ready.
+
+Here, welcome file list,we will map srvlet
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>ValidationApp</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  <servlet>
+	<servlet-name>Home</servlet-name>
+	<servlet-class>com.itvedant.HomeServlet</servlet-class>	
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>Home</servlet-name>
+	<url-pattern>/home</url-pattern>
+  </servlet-mapping>
+</web-app>
+
+now 1st time when we will run , it will give me error, because we have not created those files yet.
+
+Now lets say in HOmeServlet under, doGet() we have written--
+
+public class HomeServlet extends HttpServlet{
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		PrintWriter out = resp.getWriter();
+		resp.setContentType("text/html");
+		out.println("Welcome");
+}
+
+run as-- http://localhost:8080/ValidationApp/home
+
+Now if you want directly the req should go to home page only,
+so, in web.xml file--
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>ValidationApp</display-name>
+  
+  <servlet>
+	<servlet-name>Home</servlet-name>
+	<servlet-class>com.itvedant.HomeServlet</servlet-class>	
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>Home</servlet-name>
+	<url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>home</welcome-file>
+    
+  </welcome-file-list>
+</web-app>
+
+
+So now our req is going directly to home servlet.
+Now copy form from home.html to HomeServlet.java bcoz we want to create form.
+So make the changes in HomeServlet.java
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class HomeServlet extends HttpServlet {
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		PrintWriter out = resp.getWriter();
+		resp.setContentType("text/html");
+		
+		out.print("<form action='validate' method='get'>");
+		out.print("<table><tr><td>Name:</td>");
+		out.print("<td><input type='text' name='name'/></td>");
+		out.print("</tr><tr><td>Marks:</td>");
+		out.print("<td><input type='number' name='marks'/></td>");
+		out.print("</tr><tr><td>Color:</td><td>");
+		out.print("<select name='color'>");
+		out.print("<option value='none'>.....</option>");
+		out.print("<option>Red</option>");
+		out.print("<option>Blue</option>");
+		out.print("<option>Green</option>");
+		out.print("<option>Pink</option>");
+		out.print("<option>Purple</option>");
+		out.print("<option>Grey</option>");
+		out.print("<option>Violet</option>");
+		out.print("<option>Indigo</option>");
+		out.print("</select></td></tr><tr>");
+		out.print("<td><input type='submit' value='OK'/></td>");
+		out.print("<td><input type='reset'/></td></tr></table></form>");
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doGet(req, resp);
+	}
+}
+
+
+now,creatting into servlet is not an easy task, so we will be using jsp--
+
+Now, we directly have an option of creating servlet.
+The adv here is we donot have to create java file then servlet.
+
+So, right click project->new->servlet-->package-- com.itvedant-->class name-->ValidateServlet
+
+so name of my servlet will be automatically set to ValidateServlet
+
+-->next-->now name u can change to Validate-->now in url mapping bcoz V in validate is capital,
+so, click Validate in url mapping-->edit make it validate.-->ok-->next-->click the methods u want-->finish
+
+now, keep these functions remove others, if u want to keep that is also fine.
+
+@WebServlet(name = "Validate", urlPatterns = { "/validate" })-- in this line we mapped 
+the servlet class with the url,so that the web container can send the request to the requested servlet.
+For this 1 way is web.xml file. Here create a deployment descriptor file and do the url mapping.
+2nd way --annotation-- @WebServlet above the servlet class. Here u donot need to write anything in web.xml file.
+
+http://localhost:8080/ValidationApp/validate
+
+Now changing the doGet() to see if its actually coming here,
+
+Now we will try to validate data, that our name field is not empty,
+
+ValidateServlet.java
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class ValidateServlet
+ */
+@WebServlet(name = "Validate", urlPatterns = { "/validate" })
+public class ValidateServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
+		
+		String name = request.getParameter("name");
+		if(name.equals("")) {
+			out.print("<br/>Name not provided");
+		}
+		String marks = request.getParameter("marks");
+		if(marks.equals("")) {
+			out.print("<br/>Marks not provided");
+		}
+		String colo = request.getParameter("color");
+		if(colo.equals("none")) {
+			out.print("<br/>Color not selected");
+		}
+		
+		out.print("<br/>Validate Servlet Reached");
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+run as-- http://localhost:8080/ValidationApp/
+
+donot give any value and see error.
+
+Now we want error msgs come back to index page only. and not on other page.
+
+so we will create a list--
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class ValidateServlet
+ */
+@WebServlet(name = "Validate", urlPatterns = { "/validate" })
+public class ValidateServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
+		List<String> errorList = new ArrayList<String>();
+		String name = request.getParameter("name");
+		if(name.equals("")) {
+			errorList.add("Name not provided");
+			
+		}
+		String marks = request.getParameter("marks");
+		if(marks.equals("")) {
+			errorList.add("Marks not provided");
+		}
+		String colo = request.getParameter("color");
+		if(colo.equals("none")) {
+			errorList.add("Color not provided");
+		}
+		if(errorList.isEmpty()) {
+			request.getRequestDispatcher("success").forward(request, response);
+		}
+		else {
+			
+		}
+		
+		out.print("<br/>Validate Servlet Reached");
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+
+now lets say my data is fine and their is no error, then,
+but in case of error we will do 2 types of operations using an interface called req dispatcher.
+
+1st task-- req is given to servlet1, which gives name,marks and color.
+Now, we will forward all the req to servelet2. The res that we will finally get,
+we will get from servlet2.
+
+Now lets give this task name as success servlet.
+
+new->servlet-->java package-->com.itvedant-->Class name-->SuccessServlet-->next-->Sucess-->/success-->finish
+
+now, from home servlet, we r bringing 3 things to validate servlet.
+
+now if no error is there then in ValidateServlet.java errorlist is empty.
+and we will forward our req to SuccessServlet.
+
+if(errorList.isEmpty()) {
+			request.getRequestDispatcher("success").forward(request, response); // fwd my req to success servlet
+		}
+
+SuccessServlet.java--
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		out.print("Success");
+	}
+
+run--> fill all the values-->success
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+ 
