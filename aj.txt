@@ -1574,6 +1574,309 @@ This instance is accessible to all the servlets and JSP of the project.
 
 We can initial the parameters in this object using web.xml or add the parameters in the servlet execution 
 
+So inside web.xml, we will not put it inside any servlet, but directly after <display-name>
+
+<display-name>ValidationApp</display-name>
+  <context-param> ----------------------------------------------
+	<param-name>developer</param-name>
+	<param-value>Parinita</param-value>
+  </context-param>
+  
+  <servlet> 
+
+So now I want to access this value everywhere, like in home servlet,success servlet,validate servlet.
+
+So, lets say in HomeServlet.java, we will just retrieve this value,--
+
+out.print("</select></td></tr><tr>");
+		out.print("<td><input type='submit' value='OK'/></td>");
+		out.print("<td><input type='reset'/></td></tr></table></form>");
+		
+		String dev = getServletContext().getInitParameter("developer"); -----------
+		out.print("<h6>&copy;" + dev + "</h6>"); ----------------------------------
+	}
+	
+	@Override
+	protected void doPost
+
+run as-- url--see o/p
+
+Now if u will try to access this code in other servlets also, then it will be accessible to u.
+Lets say ValidateServlet.
+
+}
+		
+		String dev = getServletContext().getInitParameter("developer");
+		out.print("<h6>&copy;" + dev + "</h6>");
+		
+		
+	}
+
+	
+	protected void doPost
+
+then also u will not get any error.
+
+infact in servlets also u can add values inside context parameters.
+
+egHomeServlets, 1 st u will have reference
+
+String dev = getServletContext().getInitParameter("developer");
+		out.print("<h6>&copy;" + dev + "</h6>");
+		
+		ServletContext ctx = getServletContext();------------------------
+		ctx.setAttribute("sample","sampling context");-------------------
+	}
+
+u will be able to access this into SuccessServlet,
+
+		out.print("<br/><br/> Your aggregate is "+ aggregate + "%");
+		out.print("</p>");
+		
+
+		ServletContext ctx = getServletContext();
+		String samp = (String)ctx.getAttribute("sample");
+		out.print(samp);
+	}
+
+this parameter we have set in home servlet, the servlet is going from home to validate
+and then from validate to success servlet.
+
+So there are 2 ways of defining servlet context. define it as an initial parametr,
+in ur web.xml file or, in the servlet execution get the reference of the servletcontext,
+and then set the attribute accordingly.
+
+Servlet part 4---
+
+Now starting with HttpSession object.
+So for ur server to remember you, i.e. to recall data we will use HTTP Session.
+And for that we need session mgmt.
+
+Session Management Requirement is because HTTP is a stateless protocol wherein the server will not remember anything that 
+the user send once the response has been sent back. Everytime user requests to the server, 
+server will treat the request as a new request. So there is a need to maintain the state(information) 
+of the user so that server can identify the request from the same user.
+
+Session is time interval.
+
+Session Management is the way to maintain the state of the user.
+
+Session Management can be implemented using 4 techniques:
+1. HttpSession Object
+2. Cookies
+3. Hidden Form Field
+4. URL Rewriting
+
+
+HttpSession Object
+
+Is an interface used to manage session for each user. Web container will create the sesssionid for each user and 
+will maintain the information related to the user using this sessionid
+
+HttpSession can be created using:
+
+1. HttpSession(): Return current session associated with this user or if there is no session, then will create a new session
+2. HttpSession(boolean create):
+			create -> true: Always create a new session
+			create -> false: Return current session associated with this user or if the session object does not exists for the current user then it will return null
+
+
+Now lets say our home page opens directly, but we want home page to open only if user is logged in and user id pwd is correct.
+So we will create a new web page.
+so validateapp---->right click---> new--->jsp page for login and pwd.
+
+index.jsp---
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="login" method="post">
+		<table>
+			<tr>
+				<td>Username:</td>
+				<td><input type="text" name="username" required></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input type="password" name="password" required></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="login"></td>
+				<td><input type="reset"></td>
+			</tr>
+		</table>
+	</form>
+
+</body>
+</html>
+
+After this we will make changes in our web.xml file because we need to make index.jsp pages as our home page.
+
+So, web.xml--
+
+	<url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>-------------------------------
+    
+  </welcome-file-list>
+</web-app>
+
+run as-- run on server-- now if u will put username and password-- url will be directed to login servlet.
+
+So will create 1 servlet file now.
+
+new-- servlet file--> package name-->com.itvedant-->class name LoginServlet-->next-->name-->Login-->url /login-->ok-->finish
+
+Now from url, req is coming as a post req, and not a get req.
+So if we want we can remove this get req.
+
+
+package com.itvedant;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet(name = "Login", urlPatterns = { "/login" })
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+   
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+	}
+
+}
+
+
+considering a case where username and pwd are matching--
+
+
+
+package com.itvedant;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet(name = "Login", urlPatterns = { "/login" })
+public class LoginServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+   
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		
+		if(username.equals(password)) {
+			request.getRequestDispatcher("home").forward(request, response);
+		}
+		else {
+			
+		}
+	}
+
+}
+
+if they donot match then i can fwd the req to another page. and logic we will write in else part.
+and for that we will create a new servlet.
+
+new--servlet--->ErrorServlet--->next--->Error-->/error--->finish
+
+Now in this servlet the req will be coming if there is an error.
+
+So in LoginServlet.java
+
+
+		if(username.equals(password)) {
+			request.getRequestDispatcher("home").forward(request, response);
+		}
+		else {
+			response.sendRedirect("error");
+		}
+	}
+
+}
+
+ErrorServlet.java-----------------------------------------
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class ErrorServlet
+ */
+@WebServlet(name = "Error", urlPatterns = { "/error" })
+public class ErrorServlet extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		out.println("<h1 style='color:red;'>Username or Password is wrong</h1>");
+		
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+run project--
+abc 
+abc
+ok-- got home page
+
+abc
+def
+ok--- password or username wrong
+
+servlet part 4 1.webm
+
+
+
+
+
+
+
+------------------------------------------------
+Cookie
+
+In case of the HttpSession we have seen that the sessionid is maintained using cookies. We can also the cookies to maintain more information so that the server is not maintaining the information related to each user instead it is maintained in client's machine itself.
+
+Cookie is file stored in the client machine. This file is send along with the response from the server. Now everytime the request is send to the server, all the cookie related will be send along with request.
+
+1. Cookies can be implemented using Cookie class and create the instance of this class
+2. This cookie instance will be added in the response of the servlet using addCookie(Cookie) of the response object
+3. All the cookies related to this server will be send from the client machine along with the request and then we can extract all the cookies from the request using getCookies() 
+
+------------------------------------------------------------
+JSP(Java Servlet Pages)
+
+
+
+
 
 
 
