@@ -1213,7 +1213,366 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 
 run--> fill all the values-->success
 
+Now on success page we want to fill all the details.
 
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(name = "Success", urlPatterns = { "/success" })
+public class SuccessServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+  
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		//out.print("Success");
+		String name = request.getParameter("name");
+		String marks = request.getParameter("marks");
+		String color = request.getParameter("color");
+		
+		out.print("<p style='color : " + color + ";'>");
+		out.print("Welcome , "+name);
+		out.print("<br/><br/> You have scored "+ marks);
+		out.print("</p>");
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+run as-- fill all the values-->ok. So here we forwarded our req from 1 servlet to another.
+
+Now if u want to show aggregaate then on validate page only, u can also calc the aggregate and forward it to succes page.
+
+So, ValidateServlet.java
+
+	if(errorList.isEmpty()) {
+			float m = Float.parseFloat(marks);
+			// now this aggregate and m are local variable. We need to forward this local variable to
+			// another servlet
+			float aggregate = (m/500)*100;
+			request.getRequestDispatcher("success").forward(request, response);
+		}
+
+now to forward req from servlet1 to 2, we r using forward().
+We can also add our local variable in our RequestDispatcher only.
+
+}
+		if(errorList.isEmpty()) {
+			float m = Float.parseFloat(marks);
+			// now this aggregate and m are local variable. We need to forward this local variable to
+			// another servlet
+			float aggregate = (m/500)*100;
+			
+			// adding local variable in request.
+			request.setAttribute("aggr", aggregate);------------------------------ aggregate will be identified as aggr in another servlet.
+			request.getRequestDispatcher("success").forward(request, response);
+		}
+
+
+So going into successservlet--
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet(name = "Success", urlPatterns = { "/success" })
+public class SuccessServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+  
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+		//out.print("Success");
+		String name = request.getParameter("name");
+		String marks = request.getParameter("marks");
+		String color = request.getParameter("color");
+		float aggregate = (float)request.getAttribute("aggr"); //----------------------
+		
+		out.print("<p style='color : " + color + ";'>");
+		out.print("Welcome , "+name);
+		out.print("<br/><br/> You have scored "+ marks);
+		out.print("<br/><br/> Your aggregate is "+ aggregate + "%"); //--------------------
+		out.print("</p>");
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+So what we did is-- 1st we r going to home servlet-->then to validate servlet where we r reading each req
+, if there is no error and all the values are provided---> then to success servlet
+
+Here the browser is not aware about this transition. This entire process is happening within server.
+For browser, when we give all the input, input is going to validate.
+But internally it is getting forwarded from validate to success. 
+U can see the url. URL is not getting updated with success
+
+
+What if we want to make browser aware about thi that is--
+if we want to move control from 1 servlet to another we can do using 3 techniques.
+
+1. using forward() of RequestDispatcher
+2. using include() of RequestDispatcher
+3. sendRedirect of HttpRequest
+
+1. forward() of RequestDispatcher
+
+The request of the current servlet is dispatched to another servlet specified. This transition is happening inside the server, 
+the client ie. hence browser is not aware about this transition and will not update the URL accordingly
+
+2. include() of RequestDispatcher
+
+The response of the another servlet in included within the first servlet request. Here the final response is generated by the first servlet
+
+3. sendRedirect of HttpServletResponse
+
+The control will move from one servlet to another servlet specified.
+ Here the transition will not happen within the server instead the client will issue a new request for the second servlet, 
+hence the client is aware about the transition and will update the URL accordingly. 
+But here the request of the first servlet is not send to the second servlet.
+
+So lets say in case of error in validateservlet.java, i want my req to send back to home page,
+
+so, ValidateServlet.java
+
+	else {
+			response.sendRedirect("home");
+		}
+		
+So, now run-- just click ok, dont put any value. -- It is not going at validate page.
+
+So to just distinguish, 
+	else {
+			response.sendRedirect("home?redirect=yes");
+		}
+
+just to understand that it is getting redirected.
+
+run-- in case of error-- see the url.
+so, in sendRedirect, url is aware. So its like a fresh req to another servlet.
+So if u just want to do movement from 1 page to another use sendRedirect
+and if u want to pass data the use forward().
+
+Now lets say i want to goto my home page but I want to tell user about these errors.
+i.e. i want to print my error list.
+So next we will see include()---
+for this i dont want to pass req from 1 servlet to another instead i will include
+home servlet response under validate servlet.
+where, the home servlet response is the form page which we r getting.
+So here the req is not coming in the picture instead resp is coming.
+
+So, we r sending req to home page. Now if errors are there i am printing my errors.
+and after printing errors, home page should be reconstructed,this we will do
+by including home servlet within my validate servlet.
+We will not rewrite entire home code. So in this case,
+servlet2 is home page which is included as response to servlet1 which is validate page.
+
+So the compbined response of servlet1 and servlet2 is given as final response. ValidateServlet.java
+
+	else {
+			//response.sendRedirect("home?redirect=yes");
+			out.print("<ul style='color:red;'>");
+			for(String err:errorList) {
+				out.print("<li>" + err + "</li>");
+			}
+			out.print("</ul>");
+		}
+
+run as-- do not provide any value and see.
+errors are there. Now below these errors , I want my home page form reconstructed below this .
+
+	else {
+			//response.sendRedirect("home?redirect=yes");
+			out.print("<ul style='color:red;'>");
+			for(String err:errorList) {
+				out.print("<li>" + err + "</li>");
+			}
+			out.print("</ul>");
+			request.getRequestDispatcher("home").include(request,response);
+			
+		}
+
+Now, run as-->give error--->see o/p.
+
+so, wit the help of include, we r including the response of 1 servlet into our servlet.
+
+--
+
+Now to perform initialization, we have 2 interfaces.
+
+1. ServletConfig
+2. ServletContext
+
+1 is used for entire application level initialization while another is used for only application level initialization.
+So if we nedd some paramenters to be initialized before my servlet gets executed, for that these 2 parameters are used.
+
+See earlier when we created FirstApp-->java resources-->FirstServlet.java--- see init() is there.
+init() is taking 1 parameter that is of type ServletConfig. For every servlet, there is going to be 1 instance created for
+servletconfig and it will be used to initialize the vaues required to be initialized and it is not sharable.
+
+ServletConfig
+
+Is an interface whose instance is created by the web container for each servlet. For every servlet, 
+only one ServletConfig instance is created and is passed as the parameter to the init() method
+
+This object contains initail parameter passed by the web container to the Servlet during initialization
+
+Scope of this instance is restricted to the Servlet for which it is defined.
+
+So now come back to HomeServlet--- the list that we generated using out.print(),
+this doesn't need to be generated manually.
+instead the value of the colors , we will put into ServletConfig initialization so it will become more dynamic.
+
+So in ur web.xml-- define this as ur initial parameter.
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>ValidationApp</display-name>
+  
+  <servlet>
+	<servlet-name>Home</servlet-name>
+	<servlet-class>com.itvedant.HomeServlet</servlet-class>	
+	<init-param>
+		<param-name>colors</param-name>
+		<param-value>Red,Blue,Yellow,Green,Purple,Pink,Indigo,Violet,Grey,Cyan,Magenta,Orange</param-value>
+	</init-param>
+  
+  </servlet>
+  <servlet-mapping>
+	<servlet-name>Home</servlet-name>
+	<url-pattern>/home</url-pattern>
+  </servlet-mapping>
+  <welcome-file-list>
+    <welcome-file>home</welcome-file>
+    
+  </welcome-file-list>
+</web-app>
+
+Now we will extract <param-value>Red,Blue,Yellow,Green,Purple,Pink,Indigo,Violet,Grey,Cyan,Magenta,Orange</param-value>---- this is a single string.
+
+Now, we r setting this initial parametr for home servlet. So vlidate and sucess servlet will not be able to acecess it.
+
+So from homeservlet we r removing out.print red to indigo.
+
+So the value we r setting in our initial parameter, we will be reading that first.
+
+String colors = getInitParameter("colors");
+
+since,in web.xml, we have setted it to colors.
+so, colors has the entire list of param-value.
+
+u can even print and check.
+
+run as-- the entire color list is visible. But this we want in our drop off box.
+
+So what we can do is we can seperate this list and create a string array.
+
+		String colors = getInitParameter("colors");
+		//out.print(colors);
+		
+		String[] colorVaues = colors.split(",");/----------------------------
+		
+		out.print("<form action='validate' method='get'>"); 
+
+and print using for loop. So --
+
+
+public class HomeServlet extends HttpServlet {
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		PrintWriter out = resp.getWriter();
+		resp.setContentType("text/html");
+		
+		String colors = getInitParameter("colors");
+		//out.print(colors);
+		
+		String[] colorValues = colors.split(",");
+		
+		out.print("<form action='validate' method='get'>");
+		out.print("<table><tr><td>Name:</td>");
+		out.print("<td><input type='text' name='name'/></td>");
+		out.print("</tr><tr><td>Marks:</td>");
+		out.print("<td><input type='number' name='marks'/></td>");
+		out.print("</tr><tr><td>Color:</td><td>");
+		out.print("<select name='color'>");
+		out.print("<option value='none'>.....</option>");
+		
+		
+		for(String c : colorValues) {
+			out.print("<option>"+ c + "</option>");
+		}
+		
+		out.print("</select></td></tr><tr>");
+		out.print("<td><input type='submit' value='OK'/></td>");
+		out.print("<td><input type='reset'/></td></tr></table></form>");
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		doGet(req, resp);
+	}
+}
+
+so on run as-- u will get drop down in colors.
+give all the info--select color-- ok.
+ But the thing is this is accessible only inside hoemservlet.
+
+So now inside ValidateServlet--
+
+and write something like this,
+PrintWriter out = response.getWriter();
+		response.setContentType("text/html");
+		
+		String colors = getInitParameter("colors");----------
+		out.print(colors.charat(0));----------------------------------- doing some task-- it will give error.
+
+		
+		List<String> errorList = new ArrayList<String>();
+
+
+we r getting NullPointException.
+
+So remove above code from validateservlet.
+
+So now we will talk about scope of data on servlet. ServletConfig has least scope and is accessible only inside single servlet.
+
+Scope of the data in the servlet
+1. ServletConfig: accessible only in the single servlet
+2. HttpServletRequest: accessible in two servlets between which the request is transferred
+3. HttpSession: 
+4. ServletContext: accessible to the entire application means to all the Servlet & JSP of the application
+
+ServletContext
+
+Is an interface whose instance is created by the web container. Only one instance is created for the entire application (project). 
+This instance is accessible to all the servlets and JSP of the project. 
+
+We can initial the parameters in this object using web.xml or add the parameters in the servlet execution 
 
 
 
