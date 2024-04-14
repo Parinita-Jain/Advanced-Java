@@ -1850,17 +1850,406 @@ ok-- got home page
 
 abc
 def
-ok--- password or username wrong
+ok--- password or username wrong . So we can say our navigation is proper.
 
-servlet part 4 1.webm
+Now lets just imagine that in our home page we have created some links,
+i.e. if user abc is there then after login , it will print something like welcome abc
+and the form page will come. So on hoemservlet---
+
+		String colors = getInitParameter("colors");
+		//out.print(colors);
+		
+		String[] colorValues = colors.split(",");
+		String username = req.getParameter("username");----------------
+		
+		out.print("<h4>Welcome, "+username +"</h4>");------------------
+		
+		out.print("<form action='validate' method='get'>");
+		out.print("<table><tr><td>Name:</td>");
+		out.print("<td><input type='text' name='name'/></td>");
+
+
+run as-- abc abc--login--see the o/p
+
+Now, on all pages I want my session to remember that the username is abc. So we will create 1 more servlet page--
+So just some dummy servlet we r going to create.
+
+new servlet--->com.itvedant--->AdmissionServlet--->next-->Admission--->/admission--->finish
+
+
+ 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		PrintWriter out = response.getWriter();
+		String username = request.getParameter("username");
+		out.print("<h4>Welcome, "+username +"</h4>");
+		}
+
+
+Since, the req is originating from home servlet only. So after welcome in HomeServlet--
+
+	
+		out.print("<h4>Welcome, "+username +"</h4>");
+		
+		out.print("<a href = 'admission'>Admission</a>");------------------------------
+		out.print("<form action='validate' method='get'>");
+
+run-- index to login to admission page.So in login page it remembers username.
+but in admission page it doesn,t remeber and we r getting welcome, null as o/p.
+it has forgotten. So to remeber across diff pages in single session--
+
+on the page from where req has been generated, while reading the username in homeservlet,
+we will keep it in httpsession object. We have 2 methods. getSession with parameter and without parameter.
+Without parameter one returns current session object and if no session object is created yet , then it creates 
+the session object.
+
+		String username = req.getParameter("username");
+		HttpSession session = req.getSession(); ------------- here no session object  exist so it will create a new session object.
+		
+		out.print("<h4>Welcome, "+username +"</h4>");
+		
+Now this session will be created if the login is sucessful. So after login page, the page
+in which we r going, there we can start with our session object.U can put the values in ur session object.
+
+		String username = req.getParameter("username");
+		HttpSession session = req.getSession();
+		session.setAttribute("uname", username);------------------
+		
+		out.print("<h4>Welcome, "+username +"</h4>");
+
+Now after login we will goto index where it remebers after that we will goto admission where it doesnt remember.
+So, in admissionservelt, we will not create a new sesson object, instead the already existing object will be used.
+
+HttpSession sess = request.getSession();
+
+and then we will extract the value.
+
+we will not read it like this String username = request.getParameter("username"); because data is not coming through request.
+because we have not forwarded anything from home page. We have just created a hyperlink, when we will clcik on that 
+hyperlink,then req is coming here, So we will read the values. 
+
+		PrintWriter out = response.getWriter();
+		//String username = request.getParameter("username");
+		
+		HttpSession sess = request.getSession();
+		String username = (String)sess.getAttribute("uname");-------------
+		out.print("<h4>Welcome, "+ username +"</h4>");
+		}
+
+run---now it remembers.
+
+So what is happening is--In the session mgmt, after the successful login, u r creating a session object.
+Session id will be created in the memory. Whatever information u will set using set attribute,
+that will be added in that memory location till the time session object is active.
+So lets say if we create logout 
+
+		out.print("<h4>Welcome, "+username +"</h4>");
+		
+		out.print("<a href = 'admission'>Admission</a>");
+		
+		out.print("<a href='logout'>Logout</a>:");
+		out.print("<form action='validate' method='get'>");
+
+so now we will create a logout servlet,
+
+new-->servlet-->com.itvedant-->LogoutServlet--> /logout
+
+package com.itvedant;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+
+@WebServlet(name = "Logout", urlPatterns = { "/logout" })
+public class LogoutServlet extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession sess = request.getSession();
+		sess.invalidate();
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+run as--->login-->admission-->logout-->admission 
+i.e. session object is destroyed.
+
+for the same user, same session id is created until and unless we destroy the session object.
+Now how it remebers, the session ids of the user, is by using cookies in the m/c. Cookies maintain session id.
+
+so in browser-->settings--->local host
+
+Now, these session ids are occupying space , but our server has limited amount of space, and for each req if session is created
+alot of space will be req. So we will use another method-- where we will save nothing at server m/c but at clients m/c only.
+
+but 1st getSession() with parameter. lets say i have not logged in and i am directly 
+going into logout page using url http://localhost:8080/ValidationApp/logout
+
+here i am not getting any error. This is bcoz of the getSession().
+the HTTPSession object returns current session associated with this user or we can say--
+
+HttpSession can be created using:
+
+1. HttpSession(): Return current session associated with this user or if there is no session, then will create a new session.
+So even if we directly logout, it will create a new session without throwing any error.
+2. HttpSession(boolean create):
+			create -> true: Always create a new session
+			create -> false: Return current session associated with this user or if the session object does not exists for the current user then it will return null
 
 
 
 
+in logoutservlet-->getSession() with parameter is something like-- do the changes 
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession sess = request.getSession(false);----
+		sess.invalidate();
 
 
+run-- http://localhost:8080/ValidationApp/logout -->refresh-->u will get error-->etting null pointer exception 
+bcause since login is not done, session is not existing.
 
+---
+now, we will store user's info in user's m/c only.
 ------------------------------------------------
+Cookie
+
+In case of the HttpSession we have seen that the sessionid is maintained using cookies. 
+We can also the cookies to maintain more information so that the server is not maintaining the information related to each user instead it is maintained in client's machine itself.
+
+Cookie is file stored in the client machine. This file is send along with the response from the server.
+ Now everytime the request is send to the server, all the cookie related will be send along with request.
+
+1. Cookies can be implemented using Cookie class and create the instance of this class
+2. This cookie instance will be added in the response of the servlet using addCookie(Cookie) of the response object
+3. All the cookies related to this server will be send from the client machine along with the request and then we can extract all the cookies 
+from the request using getCookies() 
+
+So we will create a new project now for showing how cookieworks.
+
+so, file-->new---> dynamic web project-->proj name-->SessionManagementUsingCookies--->finish
+
+SessionManagementUsingCookies-->new-->jsp-->index.jsp-->finish
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<a href="login.jsp">Login</a><br/>
+	<a href="profile">Profile</a><br/>
+	<a href="logout">Logout</a><br>
+
+</body>
+</html>
+
+SessionManagementUsingCookies-->new-->jsp-->login.jsp-->finish
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="login" method="post">
+		<table>
+			<tr>
+				<td>Username:</td>
+				<td><input type="text" name="username" required></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input type="password" name="password" required></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="login"></td>
+				<td><input type="reset"></td>
+			</tr>
+		</table>
+	</form>
+	
+</body>
+</html>
+
+new-->servlet-->com.itvedant--->LoginServlet--->Finish
+
+change in url to /login in the code like--
+
+in the doPost() we will read the content.
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/login")
+public class LoginServlet extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String username = request.getParameter("username"); // same name as given in login.jsp
+		String password = request.getParameter("password");
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		// if user id , pwd is not correct then,
+		request.getRequestDispatcher("index.jsp").include(request, response);
+		
+		if(username.equals(password)) {
+			out.print("Successfully logged in");
+			Cookie c = new Cookie("username",username);
+			response.addCookie(c);
+		}
+		else {
+			out.print("Username or passsword is incorrect");
+			request.getRequestDispatcher("login.jsp").include(request, response);
+		}
+	}
+
+}
+
+
+run as-->login-->same username pwd-->suucc logged in.
+
+if username pwd is incorect, msg is getting printed.
+
+so see in edge browser-- all cookies and site data-- search localhost under which u will see localhost.
+this is giving info like when it was created when it will expire.
+
+So lets say, next time, it is reading this cookie. that means all the cookies htat we have,
+it wants to take with it and read it.
+
+new-->servlet--->com.itvedant-->ProfileServlet--->finish
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/profile")
+public class ProfileServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out =  response.getWriter();
+		
+		
+		request.getRequestDispatcher("index.jsp").include(request, response);
+		
+		Cookie[] ck = request.getCookies();
+		
+		if(ck!=null) {
+			for(Cookie c : ck) { // 1st cookie is of session array. So for each cookie 
+				if (c.getName().equals("username")){
+					String name = c.getValue();
+					out.print("Welcome, " + name );
+				}
+			}			
+		}
+		else {
+			out.print("Please login first");
+			request.getRequestDispatcher("login.jsp").include(request, response);
+		}
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+
+run-- now when it is saying welcome, abc -- this info is not getting stored in ur server,
+but on the clients m/c or localhost in the form of a cookie. So when the req will go to 
+thwe same m/c using this cookie it will identify.
+
+If u want to delete or want to logout u can set age to ur cookie.U can set it to 0.
+
+So new->servlet->LogoutServlet->finish
+
+package com.itvedant;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/logout")
+public class LogoutServlet extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		PrintWriter out = response.getWriter();
+		request.getRequestDispatcher("index.jsp").include(request, response);
+		Cookie c = new Cookie("username", "");
+		c.setMaxAge(0);
+		response.addCookie(c);
+		out.print("Successfully logged out");
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doGet(request, response);
+	}
+
+}
+
+run-->
+
+so we r using cookies to maintain our sessions.
+
+We can maintain sessions using hidden fields, and from urls which will be discussed later.
+
+
+------------------------------------------------------------
+JSP(Java Servlet Pages)
+
 Cookie
 
 In case of the HttpSession we have seen that the sessionid is maintained using cookies. We can also the cookies to maintain more information so that the server is not maintaining the information related to each user instead it is maintained in client's machine itself.
@@ -1872,11 +2261,270 @@ Cookie is file stored in the client machine. This file is send along with the re
 3. All the cookies related to this server will be send from the client machine along with the request and then we can extract all the cookies from the request using getCookies() 
 
 ------------------------------------------------------------
-JSP(Java Servlet Pages)
+JSP(Java Servlet Pages)--
+JSP came after servlets were created.
+1 of the major drawback is the html part which u have to put inside double quotes. tags within it. They are quite difficult to analyze.
+So instead of putting html code into java code, we can do a reverse thing,
+that is,java code within html code.
+
+So till now what we were doing was in servlet the response is generated using the object of the PrintWriter class, 
+where the HTML code is written within the double quotes as a string. 
+As the response is in the string format, find the problem is very difficult and even writing HTML code in java
+ is a tedious job. A programmer must have the good knowlegde of java then only he can create servlet.
+
+JSP page is the combination of the HTML and java code. We will create .jsp file with the base of HTML and Java code added for the business logic
+
+Difference Between Servlet and JSP
+
+Servlet
+1. Java Code
+2. Writing the code is harder as here HTML code is written with java functions.
+3. For every request service() is called, hence we have to override service() method.
+4. Mostly used for business logic/controller (move from one page to another)
+5. Implementation is faster
+6. Every time we make any changes in the servlet, the file is recompiled and the new class file is deployed in the server.
+
+JSP
+1. HTML based Code
+2. Writing the code is easier as here java code is written with HTML tags when required.
+3. For every request _jspService() is called , hence we have to override _jspService() method
+4. Mostly used for presentation (final response)
+5. Implementation is comparatively slower because here first JSP is converted into servlet
+6. Every time we make the changes in the JSP file, they are updated in the server
+-------------------------------------------------------
+JSP Life Cycle 
+
+1. Create JSP file (.jsp)
+
+Translation Stage/Phase
+2. JSP file is converted into Servlet file (.java)
+		
+		.jsp -----> .java
+
+Compilation Stage/Phase
+3. Servlet file is converted into class file (.class)
+		.java -----> .class
+
+Execution Phase
+4. Load the class file in the web container
+5. Web container will create the instance of this servlet class file. Only one instance 
+6. Web container will call the init() method only once for this instance
+7. Web container will call _jspService() method for every request
+8. Web container will call the destroy() method when the instance is removed from the server.
+
+----------------------------------------------------
+
+create a new project-- file--new--dynamic web project-->JSPDemo-->finish
+
+now we will add a jsp page--index.jsp-->finish
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h1>Welcome to JSP</h1>
+</body>
+</html>
+
+now the translation of this file is going into my server.
+
+D:\learning\apache-tomcat-9.0.87\work\Catalina\localhost\JSPDemo\org\apache\jsp
+
+see the.java file. u will find diff methods.
+most imp method is _jspService().the entire html page is written within out.print().
+u can even see Welcome to JSp. Everything written inside out.print() is the
+response that we have generated.
+This file is generated by ur tomcat server. It is extending HttpjspBase.
+it also contains init().
+
+Now what we want to do is add java code within jsp page. So,
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<h1>Welcome to JSP</h1>
+	<form action="add.jsp">
+		<table>
+			<tr>
+				<td>Number1</td>
+				<td><input type="number" name="num1"/></td>
+			</tr>	
+			<tr>
+				<td>Number2</td>
+				<td><input type="number" name="num2"/></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="add"/></td>
+				<td><input type="reset"/></td>
+			</tr>	
+		</table>
+	</form>
+</body>
+</html>
+
+run as-->just make the changes-->save it--refresh it-->no need to deploy again and again. But in case of servlet u do.
+
+lets say we want to send our req to another jsp page, i.e. add.jsp--so that when we give the nos. they will be forwarded to 
+add.jsp.
+
+So in add.jsp we will add java code. new-->jsp file-->add.jsp-->finish.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>ADD</title>
+</head>
+<body>
+<%
+String num1 = request.getParameter("num1");
+String num2 = request.getParameter("num2");
+
+out.print("Sum = "+(num1+num2));
+%>
+
+</body>
+</html>
+
+now the problem over here is, the value coming in a url is a string value.
+getParameter() always gives string value
+So we will do typecasting.
+
+<body>
+<%
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+
+out.print("Sum = "+(num1+num2));
+%>
+
+</body>
+
+save-->refresh browser-- from jsp to .java to .javac everything is in control of tomcat.
+compilation part is not done by compiler in case of servlet.infact for add also u will get code in work folder.
+And whatever code we have added in scriptlet, its part of my _jspService() now.
+
+**************************************
+
+jsp part 1 -- 2.webm 10:11
 
 
 
 
+
+****************************************
+
+Java Code can be written within the JSP page using scripting elements
+
+Three types of the scripting elements:
+1. Scriptlet Tag
+
+Any java code can be written within JSP page. This code will be added in _jspService() method when translated
+
+Syntax:
+<% java code %>
+
+2. Expression Tag
+
+The code placed inside the expression tag is written to the output stream of the response. So you need not write, out.write() / out.print(). Its mostly used to print the value of the variable or the value returned by the method. This tag code is also added in _jspService() method
+
+SyntaxL
+<%= statement%>
+
+3. Declarative Tag
+
+Used to declare the variables and methods. The code written inside the declarative tag is placed outside _jspService() method, directly inside the generated class
+
+Syntax:
+<%! variable or method declaration %>
+
+--------------------------------------------------------------
+Comments in JSP
+
+1. HTML Comments
+
+Syntax:
+<!-- Comment -->
+
+This comment will added in the translate code using out.write() method inside _jspService() method. Only this comment will be part of the final response being send to the browser
+
+2. JSP Comments
+
+Syntax:
+<%-- Comment --%>
+
+This comment is not translated into the servlet file. This comment exists only in the JSP, and not in .java file
+
+3. Java Comments
+
+This comment will be placed directly inside the _jspService() method after translation. This comment is not added in the final response.
+
+------------------------------------------------------
+Directive Tags
+
+Used to tell the web container how to translate the JSP page into the corresponding servlet
+
+Syntax:
+<%@ directive attribute="value" ..... %>
+
+In directive we can specify page or include
+Each directive has multiple predefined attributes to which we need to assign the values
+
+-----------------------------------------------------
+JSP Page Directive
+
+Define some attributes that will define the translation if the entire page
+
+<%@page ..... %>
+
+language ===> programming language used to create the servlet, it has only one value, ie. java
+
+contentType ===> define the type of the response generated by the page. For html response we use the value "text/html"
+
+pageEncoding ===> define the encoding techinque using the response will be encoded
+
+encode ===> decode (browser)
+
+import ===> define the classes or interfaces or the entire package been used in jsp
+
+session ===> define whether the page should include the session object. The default value is true. This attribute makes sure that each JSP page is the part of the session. But if we don't want some pages to be part of the session we can set the value of this attribute as false.
+
+-----------------------------------------------------
+JSP include directive
+
+Used to include the content of any resource (JSP, HTML, Text) at the page translation phase. It can used to include the common layout file. It can be used to include only static page and not the page which will be changed at the runtime
+
+<%@include file=""%>
+
+------------------------------------------------------
+Action Elements
+
+Special Tag of the jsp to perform some specific task and is used to replace the java code with tags
+
+jsp:forward
+jsp:include
+
+----------------------------------------------------
+
+1. include directive will include the resource at the translation time, hence the entire code of the resource included is added in the response of the current page
+2. include action tag will include the resource at the runtime, hence we can make some changes at the runtime in the response to be included.
+
+
+
+jsp part 1 2.webm
 
 
 
