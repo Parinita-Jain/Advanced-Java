@@ -1,4 +1,4 @@
-Web siters were static files,html pages, grphics and various other files.
+Web sites were static files,html pages, grphics and various other files.
 A web app it is dynamic.
 When a web appl prog runs on a server, it might not be containing proper html page.
 that page might be a java apli, it might be a python appli,
@@ -2417,17 +2417,10 @@ save-->refresh browser-- from jsp to .java to .javac everything is in control of
 compilation part is not done by compiler in case of servlet.infact for add also u will get code in work folder.
 And whatever code we have added in scriptlet, its part of my _jspService() now.
 
-**************************************
+Next is Expression tag -- by using it we can even remove out.print stmt,
+out.print("Sum = "+(num1+num2));--- like this one.
 
-jsp part 1 -- 2.webm 10:11
-
-
-
-
-
-****************************************
-
-Java Code can be written within the JSP page using scripting elements
+So, any Java Code can be written within the JSP page using scripting elements
 
 Three types of the scripting elements:
 1. Scriptlet Tag
@@ -2443,14 +2436,109 @@ The code placed inside the expression tag is written to the output stream of the
 
 SyntaxL
 <%= statement%>
+eg.
 
-3. Declarative Tag
+So we will replace out.print("Sum = "+(num1+num2));
+and write it outside using expression tag.
 
-Used to declare the variables and methods. The code written inside the declarative tag is placed outside _jspService() method, directly inside the generated class
+<body>
+<%
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+
+//out.print("Sum = "+(num1+num2));
+%>
+
+<p style="color:purple;">Sum=<%=(num1+num2) %></p>
+
+</body>
+
+<%=(num1+num2) %> this is our expression tag.
+
+code related to this will be added in ur service methd.
+
+3. Declarative Tag--
+
+Used to declare the variables and methods. 
+The code written inside the declarative tag is 
+placed outside _jspService() method, 
+directly inside the generated class
 
 Syntax:
 <%! variable or method declaration %>
 
+<body>
+
+
+<%! int add(int a,int b){
+	return a+b;
+}
+%>
+<%
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+
+//out.print("Sum = "+(num1+num2));
+%>
+
+<%-- <p style="color:blue;">Sum=<%=(num1+num2) %></p>--%>
+<p style="color:blue;">Sum=<%=add(num1,num2) %></p>
+
+</body>
+
+
+D:\learning\apache-tomcat-9.0.87\work\Catalina\localhost\JSPDemo\org\apache\jsp
+
+add_jsp.java-- see the code---
+
+public final class add_jsp extends org.apache.jasper.runtime.HttpJspBase
+    implements org.apache.jasper.runtime.JspSourceDependent,
+                 org.apache.jasper.runtime.JspSourceImports {
+
+ int add(int a,int b){
+	return a+b;
+}
+
+it is directly added on the class level.
+U can also usse it if u want to declare any
+variable on class level.
+Now, the jsp gives translated class.
+So the servlet class thats gets created from jsp,
+inside that class if u want to put anything,
+that u can do with the help of ! mark.
+for response u use expression tag or =.
+And for any other java code u will use <%%>-- scriplets.
+
+if u want to print time-- then--
+
+<%@page import="java.time.LocalDate" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>ADD</title>
+</head>
+<body>
+<h1>Today is <%=LocalDate.now() %></h1>
+
+<%! int add(int a,int b){
+	return a+b;
+}
+%>
+<%
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+
+//out.print("Sum = "+(num1+num2));
+%>
+
+<%-- <p style="color:blue;">Sum=<%=(num1+num2) %></p>--%>
+<p style="color:blue;">Sum=<%=add(num1,num2) %></p>
+
+</body>
+</html>
 --------------------------------------------------------------
 Comments in JSP
 
@@ -2459,20 +2547,86 @@ Comments in JSP
 Syntax:
 <!-- Comment -->
 
-This comment will added in the translate code using out.write() method inside _jspService() method. Only this comment will be part of the final response being send to the browser
+This comment will added in the translate code 
+using out.write() method inside _jspService() method.
+ Only this comment will be part of the final 
+response being send to the browser
+
+eg
+<body>
+<!-- This is the HTML comment -->
+<h1>Today is <%=LocalDate.now() %></h1>
+
+<%! int add(int a,int b){
+	return a+b;
+}
+%>
+<%
+
+now save-->go to browser-->give values-->add-->view page source
+-->this html comment is part of ur final response.
+Infact in add_jsp.java this comment is added
+using out.write, that is why this comment is there in ur response page.
+
+
 
 2. JSP Comments
 
 Syntax:
 <%-- Comment --%>
 
-This comment is not translated into the servlet file. This comment exists only in the JSP, and not in .java file
+This comment is not translated into the servlet file.
+ This comment exists only in the JSP, 
+and not in .java file
 
 3. Java Comments
 
 This comment will be placed directly inside the _jspService() method after translation. This comment is not added in the final response.
 
+<%@page import="java.time.LocalDate" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>ADD</title>
+</head>
+<body>
+<!-- This is the HTML comment -->
+<h1>Today is <%=LocalDate.now() %></h1>
+
+<%! int add(int a,int b){
+	return a+b;
+}
+%>
+<%--This is JSP comment. Not visible anywhere --%>
+<%
+//Single line java comment
+/*Multiline java comment.*/
+// They are translated and gets added to add_jsp.java .Not Part of final response. 
+%>
+
+<%
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+
+//out.print("Sum = "+(num1+num2));
+%>
+
+<%-- <p style="color:blue;">Sum=<%=(num1+num2) %></p>--%>
+<p style="color:blue;">Sum=<%=add(num1,num2) %></p>
+
+</body>
+</html>
+
 ------------------------------------------------------
+Now whenever we add any JSP page, there is a page directive
+tag added at the top which gives direction to my translation.
+It tells how the entire page wil behave like.
+So 2 directive tags that we will discuss are page directive tag
+and include directive tag.
+
 Directive Tags
 
 Used to tell the web container how to translate the JSP page into the corresponding servlet
@@ -2484,7 +2638,11 @@ In directive we can specify page or include
 Each directive has multiple predefined attributes to which we need to assign the values
 
 -----------------------------------------------------
-JSP Page Directive
+JSP Page Directive-- this is default.
+Topmost place for it is not mandatory but since
+we r setting up properties
+for entire page, its better to place it on top.
+
 
 Define some attributes that will define the translation if the entire page
 
@@ -2496,11 +2654,33 @@ contentType ===> define the type of the response generated by the page. For html
 
 pageEncoding ===> define the encoding techinque using the response will be encoded
 
-encode ===> decode (browser)
+encode ===> decode (browser).
 
 import ===> define the classes or interfaces or the entire package been used in jsp
 
-session ===> define whether the page should include the session object. The default value is true. This attribute makes sure that each JSP page is the part of the session. But if we don't want some pages to be part of the session we can set the value of this attribute as false.
+session ===> 
+Now, earlier we used to create our session object after getting logged in.
+We used to create HttpSession object, but for jsp by default it is started.
+The session object is already created , u can see in index_jsp.java
+inside _jspService() it is already created.
+And its default value is True, If
+on a page u dont want to use it, then set it to False.
+And then this object will be removed from index_jsp.java page.
+
+<%@page import="java.time.LocalDate" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" session="false"%>
+
+now, and see in index_jsp.java, session objects will be gone
+And if u will make it true, it will appear in the file.
+
+define whether the page should include
+ the session object. The default value is true. 
+This attribute makes sure that each JSP page 
+is the part of the session. 
+But if we don't want some pages to be part of 
+the session we can set the value of this attribute 
+as false.
 
 -----------------------------------------------------
 JSP include directive
@@ -2508,6 +2688,122 @@ JSP include directive
 Used to include the content of any resource (JSP, HTML, Text) at the page translation phase. It can used to include the common layout file. It can be used to include only static page and not the page which will be changed at the runtime
 
 <%@include file=""%>
+
+So, now in our application , lets have some header file created,
+Jsp demo-->new jsp file-->header.jsp
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Header</title>
+<style>
+#header{
+	width:100%;
+	heiht:30px;
+	color:white;
+	background: navy;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+	<div id="header">
+		<h2>Welcome to the world of the JSP</h2>
+	</div>
+		
+</body>
+</html>
+
+now lets say this is a common header file,
+which u want to include in both, index.jsp and add.jsp.
+
+Simply right click on header.jsp-->run as-->and see o/p 
+on browser. This is what it will look like.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Header</title>
+<style>
+#header{
+	width:100%;
+	heiht:80px;
+	color:white;
+	background: navy;
+	text-align: center;
+}
+#header a{
+	color:white;
+	
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div id="header">
+		<h2>Welcome to the world of the JSP</h2>
+		<a href="index.jsp">Index</a>
+	</div>
+		
+</body>
+</html>
+
+now we will include this in another file--
+
+<%@page import="java.time.LocalDate" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@include file="header.jsp" %>
+<!DOCTYPE html> 
+in both index.jsp and add.jsp
+
+Now, when we will run and put values in browser--
+the code will be translated.the entire code will
+be added in index_jsp.java in out.write();
+the index code of both index.jsp and header.jsp
+will be added in index_jsp.java and not at runtime.
+So its static when we talk about include directive code.
+
+Now, our header.jsp is like--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Header</title>
+<style>
+#header{
+	width:100%;
+	heiht:80px;
+	color:white;
+	background: navy;
+	text-align: center;
+}
+#header a{
+	color:white;
+	
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div id="header">
+		<h2>Welcome to the world of the JSP</h2>
+		<a href="index.jsp">Index</a>
+	</div>
+		
+</body>
+</html>
+
+We will do this in index page also.
 
 ------------------------------------------------------
 Action Elements
@@ -2517,14 +2813,3323 @@ Special Tag of the jsp to perform some specific task and is used to replace the 
 jsp:forward
 jsp:include
 
+
+
 ----------------------------------------------------
 
 1. include directive will include the resource at the translation time, hence the entire code of the resource included is added in the response of the current page
 2. include action tag will include the resource at the runtime, hence we can make some changes at the runtime in the response to be included.
 
+header.jsp--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Header</title>
+<style>
+#header{
+	width:100%;
+	heiht:80px;
+	color:white;
+	background: navy;
+	text-align: center;
+}
+#header a{
+	color:white;
+	
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div id="header">
+		<h2>Welcome to the world of the JSP</h2>
+		<a href="index.jsp">Index</a>
+	</div>
+		
+</body>
+</html>
+
+Now index.jsp---
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" session="true"%>
+<%@include file="header.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+	<form action="login.jsp">
+		<table>
+			<tr>
+				<td>Username</td>
+				<td><input type="text" name="username"/></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password"/></td>
+			</tr>
+			<tr>
+				<td>Color</td>
+				<td>
+					<select name="color">
+						<option>red</option>
+						<option>pink</option>
+						<option>blue</option>
+						<option>green</option>
+						<option>orange</option>
+					</select>
+				</td>
+			</tr>			
+			<tr>
+				<td><input type="submit" value="Login"/></td>
+				<td><input type="reset"/></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
 
 
-jsp part 1 2.webm
+Now we will add a new login page.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@include file="header.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<%
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		String color = request.getParameter("color");
+		if(username.equals(password)){
+	%>
+	
+	<jsp:forward page="success.jsp">
+		<jsp:param value="<%=username %>" name="username"/>
+		<jsp:param value="<%=color %>" name="color"/>
+	</jsp:forward>
+	
+	<%} %>
+</body>
+</html>
+
+from login page we are forwarding req to success.jsp-- so in success.jsp--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@include file="header.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Success</title>
+</head>
+<body>
+<%
+String username = request.getParameter("username"); ------- reading values sent by login.jsp
+String color = request.getParameter("color");
+%>
+
+<h3>Welcome, <%=username %></h3>
+
+<form action="add.jsp">
+		<table>
+			<tr>
+				<td>Number1</td>
+				<td><input type="number" name="num1"/></td>
+			</tr>
+			<tr>
+				<td>Number2</td>
+				<td><input type="number" name="num2"/></td>
+			</tr>
+			<tr>
+				<td><input type="submit" value="Add"/></td>
+				<td><input type="reset"/></td>
+			</tr>
+		</table>
+	</form>
+	
+	<jsp:include page="footer.jsp">
+		<jsp:param value="<%=color %>" name="color"/>
+	</jsp:include>
+</body>
+</html> 
+
+now the req is going form login page to server page, only the server
+knows about it and not the client from url.
+
+
+Now from success.jsp to add.jsp, no changes on add.jsp
+
+
+
+run-->put smith smith red-->index.jsp-->login.jsp
+in my suuccess page the footer value will be inthis color.
+now in success.jsp we will include footer and not forward it.
+Now it is included at the runtime and everytime the 
+user selected some color, in that color the o/p is getting forwarded So in success page see
+how we included footer page..
+
+we have passed a color value to success.jsp which is again getting forwarded to footer.jsp.
+The inclusion is happening at the runtime and not at the translation time.
+
+so now we will design footer page--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<%String color = request.getParameter("color"); %>
+	<h6 style='color:<%=color%>'>&copy;www.itvedant.com</h6>
+</body>
+</html>
+
+So if we talk about inclusion using directive tag and include regarding ur action tag then,
+
+
+1. include directive will include the resource at the translation time, 
+hence the entire code of the resource included is added in the response of the current page
+2. include action tag will include the resource at the runtime, 
+hence we can make some changes at the runtime in the response to be included.
+
+-------------
+
+Now, next we will see some implicit objects declared within ur jsp page.
+
+Implicit object--
+
+There are 9 implicit objects created by web container that are available to all the jsp pages.
+So the objects and different class to which they belong--
+out		JSPWriter
+request		HttpServletRequest
+response	HttpServletResponse
+config 		ServletConfig
+application	ServletContext
+session 	HttpSession
+pageContext	PageContext
+page		this/Object
+exception	Throwable
+
+
+D:\learning\apache-tomcat-9.0.87\work\Catalina\localhost\JSPDemo\org\apache\jsp
+
+for eg index_jsp.java file--
+
+in the _jspService method, HttpServletRequest and HttpServletResponse object are already created.
+i.e. request and response. U can see PageContext, HttpSession object.
+then Servlet context object application. THis is used to share data across any application.
+
+(niote--if u want to change version of java then JSPDemo-->Java Resources-->libraries-->JRE system library
+-->properties-->choose JavaSE-17.)
+
+index.jsp--
+
+<meta charset="ISO-8859-1">
+<title>Welcome</title>
+</head>
+<body>
+<% application.setAttribute("author","P"); %>
+	<form action="login.jsp">
+		<table>
+
+then we can go on footer.jsp and on footer.jsp page--
+
+<%String color = request.getParameter("color"); %>
+	<h3>
+	<%=(String) application.getAttribute("author") %>
+	</h3>
+	<h6 style='color:<%=color%>'>&copy;www.itvedant.com</h6>
+
+refresh-->run -->put values-->see.
+
+So we can access values using setAttribute and getAttribute.
+
+By default jsp puts all the pages into session object.
+But we can disable our session also. Something like lets say , in footer page, session is not allowed.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" session="false"%>
+
+then,in footer.jsp page no session object will be created.
+
+So in the translation of footer.jsp i.e. footer_jsp.java there won't be any session object
+
+-----------
+
+Exceptions in JSP--
+Dedicated page for handling the exeption need to be created in jsp,Implicit exceptions object are not available to all the jsp pages.
+it will be available to only those jsp pages,where in the page directive tag, attribute isErrorPage 
+is set to true.
+
+new-->jsp file-->errorpage.jsp-->finish
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" isErrorPage="true"%>
+<!DOCTYPE html>
+
+right click -->run it on server-->in the o/p we will not get anything,
+but in the translation of this page--> see the throwable exception under _jspService.
+This will only come when isErrorPage=True.
+
+Lets say i want to do this in index.jsp-- then simply write--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1" session="true" errorPage="erroepage.jsp"%>
+<%@include file="header.jsp" %>
+
+so now all the jsp pages where the exception will be occuring can transfer exception
+handling to this page by setting the value of errorPage atttribute to the name of the 
+error page created.
+
+<body>
+<% application.setAttribute("author","P"); 
+   int a=10/0;---------- we know this is an error.
+%>
+
+and in erroepage.jsp--
+
+<title>Insert title here</title>
+</head>
+<body>
+This is error page
+</body>
+
+do save all and just run index.jsp page-- see the msg getting printed.
+
+So wherever or errors are going that page need to be marked isErrorPage=True.
+
+-----------
+
+Project on JSP Servlet--
+
+Income Expense Application ===> User should be able to login and 
+keep the track of the income details and expense details. 
+That is, amount that I am receiveing from different sources 
+and the amount that I am expending.
+We can also add new users. 
+Able to display the income and expense details.
+
+So the different pages that we will require are--
+Register
+Login
+Add Income
+Add Expense
+Income List
+Expense List
+About Us
+
+-----------------------------------------------
+Now to tackle this problem, we will be working with MVC architecture.
+So we will be breaking our entire application into Model,View and Controller.
+MVC
+
+M ==> Model ==>Model is a normal java class.
+This Class represent the state of the application, data that is stored in the database is mapped as the object of this class.
+So for equivalent tables, equivalent classes will be there. Normal POJO classes.
+
+V ==> View ==> JSP Page which will be the final response presented to the user (i.e. the client) 
+
+C ==> Controller ==> Servlet will acts as the interface for the incoming request and will also acts as the bridge between view and model
+
+View is something that user will be looking into for eg form.
+And when that form will be filled, the req will be forwarded to servlet.
+So in the servlet we will be writing our main business logic.
+i.e. validation, traversing part i.e. mving from 1 servlet to another
+or from 1 jsp page to another, that everything will be taken care by servlet class.
+It also acts as the bridge between view and model. Model puts or getrs data to/from database.
+
+Other than this for db connectivity we will use DAO classes.
+These are the normal java classes.These are for performing activities on db. So,
+
+DAO ==> Data Access Object ==> Class which will be used to interact with the database. 
+This class will contain the commands like insert, update, delete, select to perform task on the database
+
+Utility classes are helper classes .
+
+Utility(Helper) ==> Class that will acts as the helper class for performing some extra work that req by u but is not related to ur application. 
+For eg, db connectivity, some conversion work , etc.
+Here we can use it to connect and disconnect from the database
+
+-----------------------------------------------
+So how we will procedd with the project--
+
+Display the data from the database:
+
+1. Utility Class to establish the connection with the database
+2. Model Class to map the table in the database as the object in this application
+3. DAO class that will contain a function to perform select operation on the database and return the list of the corresponding model class objects
+4. Using the servlet we will pass this list to the view
+5. View will display the records to the user
+
+---------------------------------------------
+Lets start the project:
+
+Create the database
+create database income_expense;
+use income_expense;
+
+Tables:
+
+User
+-userid
+-name
+-email
+-contact
+-password
+
+create table user(
+	id int primary key auto_increment,
+	name varchar(20),
+	email varchar(30) unique,
+	contact varchar(15),
+	password varchar(10));
+
+Income
+-incomeid
+-userid ==> foreign key(userid=>user)
+-income amount
+-income type
+-income date
+-description
+
+create table income(
+	id int primary key auto_increment,
+	income double,
+	income_type varchar(30),
+	income_date date default now(),
+	description varchar(200),
+	user_id int,
+	foreign key(user_id) references user(id));
+
+Expense
+-expenseid
+-userid ==> foreign key(userid=>user)
+-expense amount
+-expense type
+-expense date
+-description
+
+create table expense(
+	id int primary key auto_increment,
+	expense double,
+	expense_type varchar(30),
+	expense_date date default now(),
+	description varchar(200),
+	user_id int,
+	foreign key(user_id) references user(id));
+
+show tables;
+---------------------------------------------
+We will need a new workspace fo this.
+file-->switch account-->new workspace-->IncomeExpense-->launch
+Once it is loaded-->close welcome file--> add server in it-->
+see servers near terminal-->click on no servers are available-->
+select apache--> select tomcat v9.0(bcoz we have that u can check version 
+od tomcat see inside building folder)-->next-->
+browse for the tomcat location-->just select apache-tomcat-9.0.87 dont go inside.
+-->selet folder-->next-->finish
+
+Now we can check it if its running fine or not-->so click on the server-->
+start-->started synchronized
+
+Now goto browser and confirm it--->on the browser url type--> http://localhost:8080/
+the error msg is from tomcat
+
+Now we will add a neew prioject-- file-->new->dynamicweb project-->IncomeExpenseApp-->next-->finish
+
+(now if u get error--> java version possibility-->right click IncomeExpenseApp-->properties-->
+project facets-->click on java and near to version there is dropdown select 17-->Apply and close)
+
+Now since we have installed xampp, xampp also has tomcat,Inside building file u can check tomcat version.
+
+For db connectivity we need mysql jar file, which needs to be added
+in a project. This jar file u will add once and tomorrow
+if we update this jar file,
+u will have to again download this jar file, replace the
+current jar file with this new jar file,
+And all this bcoz my db connectivity code is
+ dependent upon this code in jar file,
+The drver class that we require is part of this jar file.
+So normally whart we do, we download jar file, put it in library of project,
+As a student its fine, but for a long time project,
+the manual updation is not good.
+So for doing updation automatically, maven comes into picturre.
+Maven is a project mgmt system which helps u to cover up
+ur dependencies. The main focus of maven is, in ur project,
+u have lot many dependencies, lot many jar files,
+which needs updation, so all these responsibilitites u will hand over to maven.
+i.e. download the jar file, get it ready for me,
+etc. We will only use it.
+So when external codes are there in a project, its good to use maven project. 
+
+Then,Convert it into Maven Project.
+
+Now, currently we have our normal web project,
+we want to covert this into a maven project.
+For that we need to follow some steps--
+Now, maven project contains pom.xml file.
+
+Right click on IncomeExpenseApp --> Configure-->
+convert to maven project---> No need of changing group id,
+artifact id, Normally the projects jar file gets created if its a core
+java application, but in advance java applications whatever dependencies
+u have, war file gets created. i.e. web archive file.
+The version no. of the project is controlled in Version.
+Group id is generally same as ur project,
+artifact id we can change, in a single group we can have many projects,
+so artifact id deals with trhat to identify each project.
+
+So currently we r doing finish. Project Order Model(POM)
+file gets created and pom.xml file gets added.
+Also the projects icon change and small M is written there.
+
+Now, all the dependencies are already registered in the maven 
+repository. Repository is like a metadat of
+all the libraries.
+How we can access this repository--> so go on browser-->
+url-->maven repository-->
+https://mvnrepository.com/ -- this is the repositroy link.
+now on the search bar of site, search mysql and u will 
+get mysqlconnector/j which we want.-- click on it.
+
+So my artifacts name is musql. There  are different artifacts 
+that we r going to add from here--
+we will work with the latest version only.
+Wde can also see currently how many users are using it.
+So click on th current version-- we will not download 
+anything, just link it-- we will get the xml code,
+we will just place this code on pom.xml file.
+So copy this entire xml code, in pom.xml file
+after </build> 
+
+   </plugins>
+  </build>
+  <dependencies>
+    	<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+		<dependency>
+    		<groupId>com.mysql</groupId>
+    		<artifactId>mysql-connector-j</artifactId>
+    		<version>8.3.0</version>
+		</dependency>
+  </dependencies>
+</project>
+
+Now by default maven doesn't know servlet,
+so we need to add dependencies regarding servlets too.
+
+So search for servlet in the maven repository--
+java servlet api--> copy xml code --> add as dependency
+
+   </plugins>
+  </build>
+  <dependencies>
+    	<!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+		<dependency>
+    		<groupId>com.mysql</groupId>
+    		<artifactId>mysql-connector-j</artifactId>
+    		<version>8.3.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<dependency>
+    		<groupId>javax.servlet</groupId>
+		    <artifactId>javax.servlet-api</artifactId>
+		    <version>4.0.1</version>
+		    <scope>provided</scope>
+		</dependency>
+
+  </dependencies>
+</project>
+
+getting error cannot find the declaration of element 'project'
+possible root causes-- xml syntax error, missing or incorrect namespace declaration,
+encoding issues, maven plugin issues, corrupted pom, n/w or repository issues,
+ide-specific issues.
+In our case we will do changes in namespace.
+
+<project xmlns="https://maven.apache.org/POM/4.0.0" xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+i.e. make all the http to https.
+save pom.xml
+U can also right click on project-->maven-->update-->and errors will be gone.
+
+Now inside java resources-->libraries-->maven dependencies-- the dependencies are downloaded.
+-----------------------------------------------
+M ==> we will be creating 3 classes-- User, Income, Expense
+
+####################################################################################################33
+
+Income Expense Application ===> User should be able to login and keep the track of the income details and expense details. We can also add new users. Able to display the income and expense details.
+
+Register
+Login
+Add Income
+Add Expense
+Income List
+Expense List
+About Us
+
+MVC
+
+M ==> Model ==> Class represent the state of the application, data that is stored in the database is mapped as the object of this class
+V ==> View ==> JSP page which will be the final response presented to the user(client).
+C ==> Controller ==> Servlet which will acts as the interface for all the incoming request and will also acts as a bridge between view and model.
+
+DAO ==> Data Access Object ==> Class which will used to interact with the database. This class will contain the commands like insert, update, delete, select to perform task on the database.
+
+Utility ==> Class that will acts as the helper class for performing some extra work. Here we can use it to connect with the database
+
+Example:
+
+Display the data from the database:
+
+1. Connect the database
+2. Use DAO class to perform task on the database
+3. Load/Create the object of the corresponding model class
+4. Passing these objects to the view
+5. View will display the data from the object
+
+---------------------------------------------------------
+Create the database and required tables in the database:
+
+ create database aj_income_expense;
+
+ use aj_income_expense;
+
+Tables:
+
+User
+- userid
+- name
+- email
+- contact
+- password
+
+
+create table user(
+	id int primary key auto_increment,
+	name varchar(20),
+	email varchar(30) unique,
+	contact varchar(15),
+	password varchar(10));
+
+
+Income
+- income id
+- userid ==> foreign key (userid=>user)
+- income amount
+- income type
+- income date
+- description
+
+create table income(
+	id int primary key auto_increment,
+	income double,
+	income_type varchar(30),
+	income_date date default now(),
+	description varchar(200),
+	user_id int,
+	foreign key(user_id) references user(id));
+
+
+Expense
+- expense id
+- userid ==> foreign key (userid=>user)
+- expense amount
+- expense type
+- expense date
+- description
+
+create table expense(
+	id int primary key auto_increment,
+	expense double,
+	expense_type varchar(30),
+	expense_date date default now(),
+	description varchar(200),
+	user_id int,
+	foreign key(user_id) references user(id));
+
+
+show tables;
+
+
+file--switch workspace-->AJIncomeExpense
+
+new-->dynamic web project-->Glitter IE Application-->Finish
+
+index.jsp--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<h1>GLITTER IE APP</h1>
+
+<h4><a href="adduser.jsp">Register</a></h4>
+<h4><a href="">Login</a></h4>
+<h4><a href="addincome.jsp">Add Income</a></h4>
+<h4><a href="">Add Expense</a></h4>
+<h4><a href="">Income List</a></h4>
+<h4><a href="">Expense List</a></h4>
+<h4><a href="">Logout</a></h4>
+<h4><a href="">Edit Profile</a></h4>
+<h4><a href="">About Us</a></h4>
+</body>
+</html>
+
+Now add all these jsp files---
+adduser.jsp,addincome.jsp,addexpense.jsp,incomelist.jsp,expenselist.jsp
+
+1st file that we will work is adduser.jsp
+When user is going to register he is going to call this file.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<form action="UserServlet" method="post">
+	<table>
+		<tr>
+			<td>Email</td>
+			<td><input type="email" name="email" required/></td>
+		</tr>
+		<tr>
+			<td>Password</td>
+			<td><input type="password" name="passwd1" required/></td>
+		</tr>
+		<tr>
+			<td>Confirm-Password</td>
+			<td><input type="password" name="passwd2" required/></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Register"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+	</table>
+</form>
+
+</body>
+</html>
+
+run--register-- see th o/p
+
+from here we will go to UserServlet file.
+So right click on project -->add a new servlet--pakg name com.glitter.controller-->UserServlet-->Finish
+
+next we will create a pkg inside which we will add normal java class.
+
+right click project-->new jAva class->pkg-->com.glitter.model-->User
+
+write fields of user table , generate getter setter and toString.
+
+package com.glitter.model;
+
+public class User {
+	private int id;
+	private String name;
+	private String email;
+	private String contact;
+	private String password;
+	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", contact=" + contact + ", password="
+				+ password + "]";
+	}
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getContact() {
+		return contact;
+	}
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+}
+
+
+
+Now come to UserServlet file and read data from there.
+
+here we require only doPost method.
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/UserServlet")
+public class UserServlet extends HttpServlet {
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email = request.getParameter("email");
+		String password1 = request.getParameter("passwd1");
+		String password2 = request.getParameter("passwd2");
+		
+		if(email!=null && password1.equals(password2)) {
+			//insert the user details in the database
+			
+		}
+		else {
+			//display the error message
+			request.setAttribute("errorMsg", 
+					"Password and Confirm Password Does Not Match!");
+			request.getRequestDispatcher("adduser.jsp").include(request, response);
+		}
+	}
+
+}
+
+run and see-->register-->same pwd UserServlet it is going wrong pwd same index page is showing.
+
+in this line we r sending error msg to adduser,jsp
+request.getRequestDispatcher("adduser.jsp").include(request, response);
+so in adduser.jsp we will add following code--
+
+<body>
+
+<%String message = (String)request.getAttribute("errorMsg"); %>
+<%if(message!=null){ %>
+
+	<h3 style="color:red;"><%=message %></h3>
+
+<%} %>
+
+<form action="UserServlet" method="post">
+
+
+run and see register error msg will be displayed.
+but if there is no error then we want to insert the data.
+
+So we will add 2 class files-- 1 for db connectivity 
+
+so--> new class file--> pkg-->com.glitter.dao-->UserDao-->Finish
+and for db connection--> new class file-->com.glitter.util-->DBConnect-->Finish
+
+DBConnect.java--
+
+package com.glitter.util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class DBConnect {
+	public static Connection getConnection() {
+		Connection con = null;
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/aj_income_expense","root","");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return con;
+	}
+
+}
+
+
+UserDao.java--
+
+package com.glitter.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.glitter.util.DBConnect;
+
+public class UserDao {
+	Connection con = DBConnect.getConnection();
+	
+	public boolean addUser(String email, String password) {
+		String sql = "insert into user(email,password) values(?,?)";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+			ps.setString(2, password);
+			
+			int i = ps.executeUpdate();
+			if(i>0) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+}
+
+
+
+? is for parameterized query.
+
+ps.setString(1, email); // means 1st ? is email.
+
+int i =ps.executeUpdate(); // for running the query
+if insert operation is successful then it returns the no. of rows,
+that has been inserted.
+Since we r inserting only 1 row, it will atleast return 1.
+
+If this value is 0, i.e. no rows inserted, then its an error.
+and false will be returned.
+
+Now, db will be working then only it will be possible.
+
+So now going back to UserServlet.java--
+
+			boolean b = new UserDao().addUser(email, password1);
+			
+			if(b) { // if user is added successfully then go to index.jsp
+				response.sendRedirect("index.jsp");
+			}
+			else { 
+				request.setAttribute("errorMsg", 
+						"User Already Exists!");
+				request.getRequestDispatcher("adduser.jsp").include(request, response);
+			}
+
+So, with above code file is like--
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.glitter.dao.UserDao;
+
+
+@WebServlet("/UserServlet")
+public class UserServlet extends HttpServlet {
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email = request.getParameter("email");
+		String password1 = request.getParameter("passwd1");
+		String password2 = request.getParameter("passwd2");
+		
+		if(email!=null && password1.equals(password2)) {
+			//insert the user details in the database
+			boolean b = new UserDao().addUser(email, password1);
+			
+			if(b) {
+				response.sendRedirect("index.jsp");
+			}
+			else {
+				request.setAttribute("errorMsg", 
+						"User Already Exists!");
+				request.getRequestDispatcher("adduser.jsp").include(request, response);
+			}
+		}
+		else {
+			//display the error message
+			request.setAttribute("errorMsg", 
+					"Password and Confirm Password Does Not Match!");
+			request.getRequestDispatcher("adduser.jsp").include(request, response);
+		}
+	}
+
+}
+
+
+run server--register--
+
+select * from user;
+
+Now addincome.jsp---
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+<form action="" method="post">
+	<table>
+		<tr>
+			<td>Income Amount</td>
+			<td><input type="number" name="incomeamount" required/></td>
+		</tr>
+		<tr>
+			<td>Income Type</td>
+			<td>
+				<select name="incometype">
+					<option>-----Select-----</option>
+					<option>Salary</option>
+					<option>Bonds</option>
+					<option>Others</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Description</td>
+			<td>
+				<textarea rows="3" cols="21" name="description" required></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>User</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Register"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+	</table>
+</form>
+</body>
+</html>
+
+in  <td>User</td>
+    <td></td> this part we want to bring email address enererd in db. So as of now we r leaving it as it is.
+
+Also, in index.jsp--
+<h4><a href="addincome.jsp">Add Income</a></h4> // give header ref to Add income.
+
+Now run-- add income-- u can see th combo box and everything. Next to user we will add combo box later.
+
+model class maps db. 3 tables in db so 3 classes in model package.
+
+income.java--
+
+package com.glitter.model;
+
+public class Income {
+	private int id;
+	private double income;
+	private String incomeType;
+	private String incomeDate;
+	private String description;
+	private int userId;
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public double getIncome() {
+		return income;
+	}
+	public void setIncome(double income) {
+		this.income = income;
+	}
+	public String getIncomeType() {
+		return incomeType;
+	}
+	public void setIncomeType(String incomeType) {
+		this.incomeType = incomeType;
+	}
+	public String getIncomeDate() {
+		return incomeDate;
+	}
+	public void setIncomeDate(String incomeDate) {
+		this.incomeDate = incomeDate;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	@Override
+	public String toString() {
+		return "Income [id=" + id + ", income=" + income + ", incomeType=" + incomeType + ", incomeDate=" + incomeDate
+				+ ", description=" + description + ", userId=" + userId + "]";
+	}
+	
+}
+
+
+Expense.java--
+
+package com.glitter.model;
+
+public class Expense {
+	private int id;
+	private double expense;
+	private String expenseType;
+	private String expenseDate;
+	private String description;
+	private int userId;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public double getExpense() {
+		return expense;
+	}
+	public void setExpense(double expense) {
+		this.expense = expense;
+	}
+	public String getExpenseType() {
+		return expenseType;
+	}
+	public void setExpenseType(String expenseType) {
+		this.expenseType = expenseType;
+	}
+	public String getExpenseDate() {
+		return expenseDate;
+	}
+	public void setExpenseDate(String expenseDate) {
+		this.expenseDate = expenseDate;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	@Override
+	public String toString() {
+		return "Expense [id=" + id + ", expense=" + expense + ", expenseType=" + expenseType + ", expenseDate="
+				+ expenseDate + ", description=" + description + ", userId=" + userId + "]";
+	}
+	
+	
+}
+
+
+Now to establish the connectivity we have created utility package-- DBConnect
+
+Now coming to index.jsp file--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<h1>GLITTER IE APP</h1>
+
+<h4><a href="adduser.jsp">Register</a></h4>
+<h4><a href="">Login</a></h4>
+<h4><a href="addincome.jsp">Add Income</a></h4>
+<h4><a href="addexpense.jsp">Add Expense</a></h4>
+<h4><a href="IncomeServlet">Income List</a></h4>
+<h4><a href="ExpenseServlet">Expense List</a></h4>
+<h4><a href="">Logout</a></h4>
+<h4><a href="">Edit Profile</a></h4>
+<h4><a href="">About Us</a></h4>
+</body>
+</html>
+ 
+Here whatever queries  i want to run on user, i will
+write it in another package called as UserDao i.e.
+if u want to do update delete on user table then
+go to userdao.
+
+similarly creating IncomeDao.class and ExpenseDao.class under Dao package
+
+income mein kuch karna query run karna hai to incomdao pe
+and expense pe kuch query run karna hai toh expensedao pe.
+
+So after adduser.jsp we have added income.java and then addincome.jsp
+
+<%@page import="com.glitter.dao.UserDao"%>
+<%@page import="com.glitter.model.User"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%List<User> ul = new UserDao().getUserList(); %>
+<form action="IncomeServlet" method="post">
+	<table>
+		<tr>
+			<td>Income Amount</td>
+			<td><input type="number" name="incomeamount" required/></td>
+		</tr>
+		<tr>
+			<td>Income Type</td>
+			<td>
+				<select name="incometype">
+					<option>-----Select-----</option>
+					<option>Salary</option>
+					<option>Bonds</option>
+					<option>Others</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Description</td>
+			<td>
+				<textarea rows="3" cols="21" name="description" required></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>User</td>
+			<td>
+			<select name="userid">
+			<%
+				for(User u : ul){
+			%>	
+				<option value="<%= u.getId()%>"><%=u.getEmail() %></option>		
+			<%
+				}
+			%>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Insert"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+	</table>
+</form>
+</div>
+</body>
+</html>
+
+here we r taking 1st amount from the user,
+Income type from the user,
+The description from the user,
+then we want to display user's list i.e. in user table what 
+all records are there, we will extract that and show that,
+for that we need to connect to userdao file which we have done in
+<%List<User> ul = new UserDao().getUserList(); %>
+
+so in our UserDao file we have added certain functions-- 
+
+package com.glitter.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.glitter.model.User;
+import com.glitter.util.DBConnect;
+
+public class UserDao {
+	Connection con = DBConnect.getConnection();
+	
+	public boolean addUser(String email, String password) {
+		String sql = "insert into user(email,password) values(?,?)";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+			ps.setString(2, password);
+			
+			int i = ps.executeUpdate();
+			if(i>0) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public List<User> getUserList(){
+		String sql = "select * from User";
+		List<User> ul = new ArrayList<User>();
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				User user = new User();
+				user.setId(rs.getInt("id"));
+				user.setName(rs.getString("name"));
+				user.setEmail(rs.getString("email"));
+				user.setContact(rs.getString("contact"));
+				user.setPassword(rs.getString("password"));
+				
+				ul.add(user);
+			}
+			
+			return ul;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+}
+
+
+the getUserList() is returning a list of user.
+so we wrote select * from user query,
+with the preparedstmt we r going to go to the db,
+which will return me a resultset.
+And corresponding to that result set,
+we will create object of User() class and set its value accordingly.
+and bu ul.add(user) we will add it in the list.
+
+and finally we will return complete ul to the variable that
+i created in addincome.jsp-- i.e. <%List<User> ul = new UserDao().getUserList(); %>.
+then in addincome.jsp using the for loop--
+
+		for(User u : ul){
+			%>	
+				<option value="<%= u.getId()%>"><%=u.getEmail() %></option>		
+			<%
+				}
+
+Same thing we have done for expense also.
+
+So, in expensedao.java--
+
+package com.glitter.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.glitter.model.Expense;
+import com.glitter.model.Income;
+import com.glitter.util.DBConnect;
+
+public class ExpenseDao {
+	Connection con = DBConnect.getConnection();
+
+	public boolean addExpense(Expense inc) {
+		String sql = "insert into expense(expense,expense_type,description,user_id) values(?,?,?,?)";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setDouble(1, inc.getExpense());
+			ps.setString(2, inc.getExpenseType());
+			ps.setString(3, inc.getDescription());
+			ps.setInt(4, inc.getUserId());
+			
+			int i = ps.executeUpdate();
+			
+			if(i>0) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public List<Expense> getExpenseList(){
+		List<Expense> expList = new ArrayList<Expense>();
+		
+		String sql = "select * from expense";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Expense exp = new Expense();
+				exp.setId(rs.getInt("id"));
+				exp.setExpense(rs.getDouble("expense"));
+				exp.setExpenseType(rs.getString("expense_type"));
+				exp.setExpenseDate(rs.getDate("expense_date").toString());
+				exp.setDescription(rs.getString("description"));
+				exp.setUserId(rs.getInt("user_id"));
+				
+				expList.add(exp);
+			}
+			
+			return expList;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+}
+
+
+expenselist.jsp--
+
+<%@page import="com.glitter.model.Expense"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%List<Expense> expList = (List<Expense>)
+				session.getAttribute("expList"); 
+int count=1;
+%>
+	<table cellpadding="10">
+		<tr>
+			<th>ID</th>
+			<th>Expense</th>
+			<th>Expense Type</th>
+			<th>Expense Date</th>
+			<th>Description</th>
+			<th>User ID</th>
+			<th>Action</th>
+		</tr>
+		<%for(Expense e : expList) {%>
+		<tr>
+			<td><%=count++ %></td>
+			<td><%=e.getExpense() %></td>
+			<td><%=e.getExpenseType() %></td>
+			<td><%=e.getExpenseDate() %></td>
+			<td><%=e.getDescription() %></td>
+			<td><%=e.getUserId() %></td>
+		</tr>		
+		<% } %>
+	</table>
+	
+</div>
+</body>
+</html>
+
+IncomeDao.java--
+
+package com.glitter.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.glitter.model.Income;
+import com.glitter.util.DBConnect;
+
+public class IncomeDao {
+	
+	Connection con = DBConnect.getConnection();
+
+	public boolean addIncome(Income inc) {
+		String sql = "insert into income(income,income_type,description,user_id) values(?,?,?,?)";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setDouble(1, inc.getIncome());
+			ps.setString(2, inc.getIncomeType());
+			ps.setString(3, inc.getDescription());
+			ps.setInt(4, inc.getUserId());
+			
+			int i = ps.executeUpdate();
+			
+			if(i>0) {
+				return true;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public List<Income> getIncomeList(){
+		List<Income> incList = new ArrayList<Income>();
+		
+		String sql = "select * from income";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				Income inc = new Income();
+				inc.setId(rs.getInt("id"));
+				inc.setIncome(rs.getDouble("income"));
+				inc.setIncomeType(rs.getString("income_type"));
+				inc.setIncomeDate(rs.getDate("income_date").toString());
+				inc.setDescription(rs.getString("description"));
+				inc.setUserId(rs.getInt("user_id"));
+				
+				incList.add(inc);
+			}
+			
+			return incList;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+}
+
+
+
+
+run--> register-->on successful register it comes to index page--
+then going to add income--in users drop down u can see the email ids of all the users.
+select any email id-- give income amount lets say 10000,income type--salary-- description april 2022
+-- insert
+
+do select * from income; in db
+
+then we want to display the income list. 
+i.e. list of my income, my expenses i want to display.
+so we will come to index.jsp--
+for displaying income list i will go to my IncomeServlet
+and for showing expense list, i will go to ExpenseServlet.
+
+Now these 2 req will not go as post req but as get req.
+
+that means inside these 2 servlets, i will need doGet().
+
+IncomeServlet.java
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.glitter.dao.IncomeDao;
+import com.glitter.model.Income;
+
+@WebServlet("/IncomeServlet")
+public class IncomeServlet extends HttpServlet {
+	Income inc = new Income();
+	IncomeDao incd = new IncomeDao();
+	
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		List<Income> incList = incd.getIncomeList();
+		session.setAttribute("incList", incList);
+		resp.sendRedirect("incomelist.jsp");
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Double income = Double.parseDouble(request.getParameter("incomeamount"));
+		String incomeType = request.getParameter("incometype");
+		String description = request.getParameter("description");
+		int userId = Integer.parseInt(request.getParameter("userid"));
+		
+		inc.setIncome(income);
+		inc.setIncomeType(incomeType);
+		inc.setDescription(description);
+		inc.setUserId(userId);
+		
+		boolean b = new IncomeDao().addIncome(inc);
+		if(b) {
+			response.sendRedirect("index.jsp");
+		}
+		else {
+			response.sendRedirect("addincome.jsp");
+		}
+	}
+
+}
+
+so inside doGet() we connected to our db and we r going to read the files..
+with the help of IncomeDao.
+So in IncomeDao,we have a getIncomeList(), i.e. public List<Income> getIncomeList(){
+where we are doing select * from income; i.e. getting all the income from the income table.
+and putting the records in my incList.
+
+So, in incomeServlet we will call this method.
+for that we will use a session object
+
+IncomeDao incd = new IncomeDao();
+
+and inside doGet() we will create object of HttpSession.
+
+i.e.
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		List<Income> incList = incd.getIncomeList();
+		session.setAttribute("incList", incList); // setting the attribute incList
+		resp.sendRedirect("incomelist.jsp"); // sending the response to incomelist.jsp.
+	}
+
+
+i.e. when user will click to see incomelist, the req will go to income servelt,
+from income servlet it will connect to incomedao file which will bring complete list from th db,
+and add the list into the session object. and then the response will be forwarded to incomelist.jsp
+
+So, in our incomelist.jsp we will do following changes---
+In incomelist.jsp we will show this entire list.
+
+So this code which we have putted in our income servlet we will put that in our
+ExpenseServlet.jsp also.
+
+
+ExpenseServlet.java
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.glitter.dao.ExpenseDao;
+import com.glitter.model.Expense;
+
+@WebServlet("/ExpenseServlet")
+public class ExpenseServlet extends HttpServlet {	
+	Expense exp = new Expense();
+	ExpenseDao expd = new ExpenseDao();
+	
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		List<Expense> expList = expd.getExpenseList();
+		session.setAttribute("expList", expList);
+		resp.sendRedirect("expenselist.jsp");
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Double expense = Double.parseDouble(request.getParameter("expenseamount"));
+		String expenseType = request.getParameter("expensetype");
+		String description = request.getParameter("description");
+		int userId = Integer.parseInt(request.getParameter("userid"));
+		
+		exp.setExpense(expense);
+		exp.setExpenseType(expenseType);
+		exp.setDescription(description);
+		exp.setUserId(userId);
+		
+		boolean b = new ExpenseDao().addExpense(exp);
+		if(b) {
+			response.sendRedirect("index.jsp");
+		}
+		else {
+			response.sendRedirect("addincome.jsp");
+		}
+	}
+
+}
+
+From incomeServlet.jasp and ExpenseServlet.jsp the response is going to incomelist.jsp
+and expenselist.jsp.
+
+So run and click incomelist-->in the url req fwd to incomelist
+and on clicking ExpenseList--> in the url req fwded to expenselist.
+
+Basicallly, on clicking the req is going to servlet which is getting redirected to jsp page.
+
+So first we will create incomlist.jsp that same thing we will do in expenselist.jsp.
+
+<%List<Income> incList = (List<Income>)
+				session.getAttribute("incList"); -- list is added inside session object.
+In incomeServlet, while doing setAttribute, we took the name "incList". So same name we will use for getAttribute.
+Also, session.getAttribute("incList") is returning a value of type object, so we will need to typecast,(List<Income>).
+
+We have applied for loop to create rows.
+
+incomelist.jsp-----
+
+<%@page import="com.glitter.model.Income"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%List<Income> incList = (List<Income>)
+				session.getAttribute("incList"); 
+int count=1;
+%>
+	<table cellpadding="10">
+		<tr>
+			<th>ID</th>
+			<th>Income</th>
+			<th>Income Type</th>
+			<th>Income Date</th>
+			<th>Description</th>
+			<th>User ID</th>
+			<th>Action</th>
+		</tr>
+		<%for(Income i : incList) {%>
+		<tr>
+			<td><%=count++ %></td>
+			<td><%=i.getIncome() %></td>
+			<td><%=i.getIncomeType() %></td>
+			<td><%=i.getIncomeDate() %></td>
+			<td><%=i.getDescription() %></td>
+			<td><%=i.getUserId() %></td>
+		</tr>		
+		<% } %>
+	</table>
+	
+</div>
+</body>
+</html>
+
+run and click on income list--- see the o/p.
+
+Same thing we will do with expenselist also---
+
+expenselist.jsp--
+
+<%@page import="com.glitter.model.Expense"%>
+<%@page import="java.util.List"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%List<Expense> expList = (List<Expense>)
+				session.getAttribute("expList"); 
+int count=1;
+%>
+	<table cellpadding="10"> ---------- padding because data will otherwise look congested.
+		<tr>
+			<th>ID</th>
+			<th>Expense</th>
+			<th>Expense Type</th>
+			<th>Expense Date</th>
+			<th>Description</th>
+			<th>User ID</th>
+			<th>Action</th>
+		</tr>
+		<%for(Expense e : expList) {%>
+		<tr>
+			<td><%=count++ %></td>
+			<td><%=e.getExpense() %></td>
+			<td><%=e.getExpenseType() %></td>
+			<td><%=e.getExpenseDate() %></td>
+			<td><%=e.getDescription() %></td>
+			<td><%=e.getUserId() %></td>
+		</tr>		
+		<% } %>
+	</table>
+	
+</div>
+</body>
+</html>
+
+run-- expense list-- if only 1 expense is seen then add more-- by clicking--add expense--
+eg 6000, bill payment,etc.
+
+So in the index.jsp page when we will clack on Expense List link,
+the req will go to ExpenseServlet, And this will go as get req.
+In the ExpenseDao file we have already extractiong list of all the expenses.
+See ExpenseDao it is returning list of expense.
+which we are trying to read in ExpenseServlet by creating object of Dao file.
+ExpenseDao expd = new ExpenseDao();
+and then I am adding the list in the session object expList,
+so that whenever I feel like using it, i can extract it from the session.
+and then i am redirecting to expenselist.jsp .
+
+So in expenseList.jsp--> the list that we have putted in expList object,
+we are extracting that, and after extracting we r displaying by putting for loop.
+
+Now we dont want to see this incomelist expenses for every user.
+these options of adding the income, adding the expense, expenselist, incomelist,
+should come when the user is already existing.
+i.e. user is not a new user.
+The new user should get the option of register / login.
+
+So the list that we r currently showing should be visible, when we r already loggedin.
+
+So, for that we will do some settings here. We will add the css file,
+So, under webapp folder-->we will create new folder-->resources-->finish 
+ur image file, video file, java script file,css files u will put here.
+
+then u need to add 1 more folder inside resources-->CSS-->finish
+Inside this folder we will find all the css files. 
+So, inside CSS folder-->new-->css file-->main.css
+
+Now this main.css file i want to be applied on my project.
+
+click on src folder--> we r going to create another jsp file--> sidebar.jsp
+
+In sidebar.jsp-- all the links that I have in index.jsp we will put in it.
+
+sidebar.jsp--- cut alll the h4 from index.jsp and paste here.
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+
+<h4><a href="adduser.jsp">Register</a></h4>
+<h4><a href="">Login</a></h4>
+<h4><a href="addincome.jsp">Add Income</a></h4>
+<h4><a href="addexpense.jsp">Add Expense</a></h4>
+<h4><a href="IncomeServlet">Income List</a></h4>
+<h4><a href="ExpenseServlet">Expense List</a></h4>
+<h4><a href="">Logout</a></h4>
+<h4><a href="">Edit Profile</a></h4>
+<h4><a href="">About Us</a></h4>
+
+</body>
+</html>
+
+Now we will link our css file to sidebar.jsp file.
+so, in sidebar.jsp file--
+
+<title>Insert title here</title>
+<link href="resource/css/main.css" rel="stylesheet"/>---------
+</head>
+
+then we r adding all the options in a division.
+
+<div>
+<h4><a href="adduser.jsp">Register</a></h4>
+<h4><a href="">Login</a></h4>
+<h4><a href="addincome.jsp">Add Income</a></h4>
+<h4><a href="addexpense.jsp">Add Expense</a></h4>
+<h4><a href="IncomeServlet">Income List</a></h4>
+<h4><a href="ExpenseServlet">Expense List</a></h4>
+<h4><a href="">Logout</a></h4>
+<h4><a href="">Edit Profile</a></h4>
+<h4><a href="">About Us</a></h4>
+</div>
+
+In sidebar.jsp we will put a condition, based on the user has loggedin or not what options to show.
+
+next we r giving teh id to div, Bcoz on the basis of id we will get the css.
+
+<div id="sidebar">
+	<h4><a href="adduser.jsp">Register</a></h4>
+	<h4><a href="">Login</a></h4>
+	<h4><a href="addincome.jsp">Add Income</a></h4>
+	<h4><a href="addexpense.jsp">Add Expense</a></h4>
+	<h4><a href="IncomeServlet">Income List</a></h4>
+	<h4><a href="ExpenseServlet">Expense List</a></h4>
+	<h4><a href="">Logout</a></h4>
+	<h4><a href="">Edit Profile</a></h4>
+	<h4><a href="">About Us</a></h4>
+</div>
+
+Now in the main.css we will do styling of sidebar.
+this is all part of web designing.
+
+#sidebar{
+	width: 200px;
+	height: 100%;
+	background-color: navy;
+	position: fixed;
+	padding: 10px;
+	left: 0%;
+	top: 0%;	
+	font-variant: small-caps;
+}
+
+#sidebar a{ -------------------------  sidebar ke andar ke anchor tags will have diff styling.
+	color: white;
+	text-decoration: none;
+}
+
+#sidebar a:hover {
+	color: aqua;
+}
+
+Now, in url--in index.jsp--> u will only get GLITTER IE APP.
+change the url and instead of index.jsp write-- sidebar.jsp--
+
+And u will get styled sidebar.
+
+Now coming back to index.jsp--
+
+<body>
+<div id="main">
+	<h1>GLITTER IE APP</h1>
+</div>
+</body>
+
+we gave id to div main. Then we will include jsp page sidebar.jsp
+
+<body>
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+	<h1>GLITTER IE APP</h1>
+</div>
+</body>
+
+run--> now since Glitter IE App is in a division, it will come down only.
+
+main.css--
+
+#sidebar{
+	width: 200px;
+	height: 100%;
+	background-color: navy;
+	position: fixed;
+	padding: 10px;
+	left: 0%;
+	top: 0%;	
+	font-variant: small-caps;
+}
+
+#sidebar a{
+	color: white;
+	text-decoration: none;
+}
+
+#sidebar a:hover {
+	color: aqua;
+}
+
+#main{
+	padding-left: 250px;
+}
+
+Now in every jsp page we will include sidebar file
+after body tag and add complete code inside div tag whose id is main.
+and before closing body tag end div too.
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+addincome,addexpense,incomelist,adduser,addincome,index.jsp,expenselist
+
+adduser.jsp--
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%String message = (String)request.getAttribute("errorMsg"); %>
+<%if(message!=null){ %>
+
+	<h3 style="color:red;"><%=message %></h3>
+
+<%} %>
+
+<form action="UserServlet" method="post">
+	<table>
+		<tr>
+			<td>Email</td>
+			<td><input type="email" name="email" required/></td>
+		</tr>
+		<tr>
+			<td>Password</td>
+			<td><input type="password" name="passwd1" required/></td>
+		</tr>
+		<tr>
+			<td>Confirm-Password</td>
+			<td><input type="password" name="passwd2" required/></td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Register"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+	</table>
+</form>
+</div>
+</body>
+</html>
+
+
+
+
+note--> main.css contains styling code.
+
+run-->links are coming click on any link content is coming.
+
+in the head part  of sidebar we link the css file.
+
+Now we will design login page 
+new-->jsp page-->login.jsp-->finish
+
+its layout will be similar to adduser.jsp
+
+so ctrlA,ctrlC,ctrlV
+
+we will change action in this page. SO instead of going to UserServlet,
+goto LoginServlet.
+
+We will not take confirm password.
+
+We will take password only once during login.
+
+Instead of register button its a login button.
+
+And after the table i.e. </table> we will add 1 link--
+
+<a href="adduser.jsp">Click here to register</a>----- in case the user is not logged in from before.
+
+login.jsp----------
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+<%String message = (String)request.getAttribute("errorMsg"); %>
+<%if(message!=null){ %>
+
+	<h3 style="color:red;"><%=message %></h3>
+
+<%} %>
+
+<form action="LoginServlet" method="post">
+	<table>
+		<tr>
+			<td>Email</td>
+			<td><input type="email" name="email" required/></td>
+		</tr>
+		<tr>
+			<td>Password</td>
+			<td><input type="password" name="password" required/></td>
+		</tr>
+		
+		<tr>
+			<td><input type="submit" value="Login"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+	</table>
+	<br/><br/>
+	<a href="adduser.jsp">Click here to register</a>
+</form>
+</div>
+</body>
+</html>
+</html>
+
+now in sidebar.jsp---
+
+in the login reference--
+
+	<h4><a href="adduser.jsp">Register</a></h4>
+	<h4><a href="login.jsp">Login</a></h4> ------------------------------
+	<h4><a href="addincome.jsp">Add Income</a></h4>
+
+run---->login--->url(login.jsp)--give email and pwd-->url going to LoginServlet
+
+So now adding login servlet to java controller--package--com.glitter.controller-->
+LoginServlet--> finish
+
+delete complete code inside it. We will add our code later on.
+
+we will need doPost() so we will override it.
+
+in doPost() we will read our email,
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String email= req.getParameter("email");
+		String password = req.getParameter("password");
+	}
+}
+
+now this user id and pwd we will send to DAO,Now in DAO 1st we will search,
+So we will have 2 objects , 1 of user and 2nd of UserDao.
+
+
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	User u = new User(); -------------------------
+	UserDao ud = new UserDao(); ------------------
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+
+Now in UserDao class we will create 1 method to which we will pass these 2 values.
+
+and from there it will return boolean values
+
+UserDao.java
+
+
+public User userLogin(String email) {
+		
+	}
+
+in LoginServlet.jsp, this will go as a req to UserDao.java
+
+String email= req.getParameter("email");
+		String password = req.getParameter("password");
+		
+		boolean b = ud.userLogin(email, password);
+	} 
+
+So now addding more code to UserDao.java---
+
+1st we will write a query.
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public User userLogin(String email,String Password) {
+		String sql = "select * from user where email=? and password=?";
+		User user = new User();
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, email);
+			ps.setString(2, password);
+			
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()) {
+				user.setId(rs.getInt("id"));
+				user.setName(rs.getString("name"));
+				user.setEmail(rs.getString("email"));
+				user.setContact(rs.getString("contact"));
+				user.setPassword(rs.getString("password"));
+			}			
+			return user; -------- if it finds the user it will return me the user otherwise it will return me null
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+}
+
+So in our LoginServlet--
+package com.glitter.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.glitter.dao.UserDao;
+import com.glitter.model.User;
+
+@WebServlet("/LoginServlet")
+public class LoginServlet extends HttpServlet {
+	User u = new User();
+	UserDao ud = new UserDao();
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String email= req.getParameter("email");
+		String password = req.getParameter("password");
+		HttpSession session=req.getSession();
+		
+		u = ud.userLogin(email, password);
+		if(u.getEmail().equals(email) && u.getPassword().equals(password)) {
+			session.setAttribute("user", u);
+			resp.sendRedirect("index.jsp");
+		}
+		else {
+			req.setAttribute("errorMsg", 
+					"Email and Password Does Not Match!");
+			req.getRequestDispatcher("login.jsp").include(req, resp);
+		}
+		
+		
+	}
+}
+
+
+now come to sidebar.jsp-- bcoz if user gets logged in then only he will get the sidebar code.
+
+<body>
+<%User user=(User)session.getAttribute("user"); %>------------
+<div id="sidebar">
+
+<%if(user!=null){ %> if user!= null , that means login succesful,then he will get some sidebar , 
+<%} %>
+
+<%if(user==null){ %> if user == null, login not successful then he will get some sidebar
+<%} %>
+
+So, our sidebar.jsp is like--
+
+<%@ page import = "com.glitter.model.User" %>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+<link href="resource/css/main.css" rel="stylesheet"/>
+</head>
+<body>
+<%User user=(User)session.getAttribute("user"); %>  ---------- here if we r getting user, then only user should be added in a session.And sidebar with option is dispalyed, i.e. <%if(user!=null){ %>
+<div id="sidebar">
+<h4><a href="index.jsp">Home</a></h4>
+<%if(user!=null){ %>
+
+	
+	<h4><a href="addincome.jsp">Add Income</a></h4>
+	<h4><a href="addexpense.jsp">Add Expense</a></h4>
+	<h4><a href="IncomeServlet">Income List</a></h4>
+	<h4><a href="ExpenseServlet">Expense List</a></h4>
+	<h4><a href="">Logout</a></h4>
+	<h4><a href="">Edit Profile</a></h4>
+	<h4><a href="">About Us</a></h4>
+
+<%} %>
+
+<%if(user==null){ %>
+	<h4><a href="adduser.jsp">Register</a></h4>
+	<h4><a href="login.jsp">Login</a></h4>
+<%} %>
+	
+<h4><a href="">About Us</a></h4>
+	
+</div>
+</body>
+</html>
+
+run-->
+1st we r getting 4 options.
+hoem,register,login,about us
+
+login-- see the o/p.
+
+SO till now what we did-- if the user has logged in then we will add 
+value in our session object. And this will happen when the user will click on the login
+page , the req will goto LoginServlet.
+
+In the login servlet we are reading these values,
+We have used dao here bcoz in our db, these values should be already there.
+
+then we creaetd 1 func userlogin-- where we are trying to extract email id and pwd from db.
+if email id and user is not there in my db, then this rs will be null.
+
+but if email id pwd exist, then in the rs object we will fill the value
+i.e. id name email pwd. and to user we r sending user.
+Then in login servlet, we will do further checking.
+Now if user!= null then only we will get sidebar options.
+
+Now what we want to do is logout. On logout, we will invalidate the sesion which we started.
+
+SO in case of Logout we will send our rew to LoginServlet only.
+form login.jsp req is going to LogiServlet which is a post req,
+and when we will logout, that will go as a get req.
+ 
+So, sidebar,jsp--
+
+	<h4><a href="ExpenseServlet">Expense List</a></h4>
+	<h4><a href="LoginServlet">Logout</a></h4>
+
+So, in LoginServlet we will add doGet().
+
+
+in th doGet() we will retrieve session object, and we will simply invalidate teh session and indirect to index.jsp.
+
+
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		session.invalidate();
+		resp.sendRedirect("index.jsp");
+	}
+
+run and see-- do login  once logout index page comes.
+
+Next code we will do is related to updating values.
+
+After logging in edit profile link comes,
+if we notice, we have saved only email id and password of user in table.
+not name , contact details, etc.
+
+So we will design another jsp page, updateuser.jsp--- this will come after login.
+
+so in sidebar.jsp--
+
+	<h4><a href="LoginServlet">Logout</a></h4>
+	<h4><a href="updateuser.jsp">Edit Profile</a></h4>
+	
+
+<%} %>
+
+now in the updateuser.jsp,
+since user is already logged in, i can extract user's data.
+
+<body>
+<%User user = (User)session.getAttribute("user");%>
+</body>
+
+user contains all the values of user.
+
+now we will create form where we will take all the values input from user like
+name value, email value, whatever it wants to update.
+
+So we will take adduser.jsp form only from jsp to /div-- copy everything and paste
+or updateuser.jsp file is shared u can just copy paste..
+
+We have taken hidden field. Now in both adduser and update user case req is going to UserServlet only.
+So to distinguish and to get to know from where the req has come, from adduser or updateuser..
+I have added hidden values.
+<form action="UserServlet" method="post">
+		<input type="hidden" name="action" value="updateuser"> --- here the value is update user but in case of adduser,
+the value is adduser. With user.getId() and all the values from the db will also get filled there.
+
+
+<%@page import="com.glitter.model.User"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+<%User user = (User)session.getAttribute("user");%>
+
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+	<form action="UserServlet" method="post">
+		<input type="hidden" name="action" value="updateuser"> 
+			<table>
+				<tr>
+					<td>Id</td>
+					<td><input type="text" name="id" value="<%=user.getId()%>" readonly="readonly"></td>
+				</tr>
+
+				<tr>
+					<td>Name</td>
+					<td><input type="text" name="name" value="<%=user.getName()%>" required="required"></td>
+				</tr>
+
+				<tr>
+					<td>Email</td>
+					<td><input type="email" name="email" value="<%=user.getEmail()%>" required="required"></td>
+				</tr>
+
+				<tr>
+					<td>Contact</td>
+					<td><input type="text" name="contact" value="<%=user.getContact()%>" required="required"></td>
+				</tr>
+
+				<tr>
+					<td>Password</td>
+					<td><input type="password" name="passwd1" value="<%=user.getPassword()%>" required="required"></td>
+				</tr>
+
+
+				<tr>
+					<td><input type="submit" value="Save"></td>
+					<td><input type="reset" value="Reset"></td>
+				</tr>
+			</table>
+
+		</form>
+	</div>
+
+</body>
+</html>
+
+Now in userservlet, where we r checking the pwd and correct email,
+we will put this complete code inside if stmt.
+
+we will read the action here.We are adding action stme ,
+ bcox to user servlet req is coming from both add user and update user,
+for distinguishing them . i am using add user and update user.
+
+if(action!=null && action.equals("adduser")) {}-- write complete authentication code inside this.
+
+else if(action!=null && action.equals("updateuser")) {
+			
+		}-- here we will add code for user updation.
+
+So if we will just run the code--
+login--edit profile-- if u will notice all ur fields are filled.
+id is not changeable rest all u can change.
+Now when u will edit and u will press save buttton, the req will goto
+User Servlet only.
+And in User Servlet we will read all the fields, and need to update
+table. So we will create our HttpSession object again.
+
+HttpSession session = request.getSession(); 
+and then i will read all the fields of the object.
+
+So, UserServlet.java-----
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.glitter.dao.UserDao;
+import com.glitter.model.User;
+
+
+@WebServlet("/UserServlet")
+public class UserServlet extends HttpServlet {
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email = request.getParameter("email");
+		String password1 = request.getParameter("passwd1");
+		String password2 = request.getParameter("passwd2");
+		String action = request.getParameter("action");
+		if(action!=null && action.equals("adduser")) {
+		
+		if(email!=null && password1.equals(password2)) {
+			//insert the user details in the database
+			boolean b = new UserDao().addUser(email, password1);
+			
+			if(b) {
+				response.sendRedirect("index.jsp");
+			}
+			else {
+				request.setAttribute("errorMsg", 
+						"User Already Exists!");
+				request.getRequestDispatcher("adduser.jsp").include(request, response);
+			}
+		}
+		else {
+			//display the error message
+			request.setAttribute("errorMsg", 
+					"Password and Confirm Password Does Not Match!");
+			request.getRequestDispatcher("adduser.jsp").include(request, response);
+		}
+		}
+		else if(action!=null && action.equals("updateuser")) {
+			HttpSession session = request.getSession();
+			String name = request.getParameter("name");
+			String contact = request.getParameter("contact");
+			int id = Integer.parseInt(request.getParameter("id"));
+			
+			User user = new User();
+			user.setId(id);
+			user.setName(name);
+			user.setEmail(email);
+			user.setContact(contact);
+			user.setPassword(password1);
+			
+			boolean b = new UserDao().updateUser(user); ------- here the req will goto UserDao updateuser().
+			
+			if(b) { ------------------------------------ if values got updated, in updateUser(), b iset to true.
+				session.setAttribute("user",user); ------ if b true then set attribute user and redirect to index page.
+				response.sendRedirect("index.jsp");
+			}
+			}
+	}
+
+}
+
+Now, in UserDao class, boolean b = new UserDao().updateUser(user);----- we will create updateUser().
+
+USerDao.java--
+
+public boolean updateUser(User u) {
+		String sql = "update user set name=?, email=?, contact=?, password=? where id=?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, u.getName());
+			ps.setString(2, u.getEmail());
+			ps.setString(3, u.getContact());
+			ps.setString(4, u.getPassword());
+			ps.setInt(5, u.getId());
+			
+			int i = ps.executeUpdate();
+			
+			if(i>0) {
+				return true;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+
+run---edit profile-->user--abc contact-123
+
+index.jsp--
+
+<%@page import="com.glitter.model.User"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Glitter IE App</title>
+</head>
+<body>
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+	<h1>GLITTER IE APP</h1>
+	<%User user = (User)session.getAttribute("user");%>
+	<%if(user!=null){ %>
+	<h2>Welcome, <%=user.getEmail() %></h2>
+	<%} %>
+</div>
+</body>
+</html>
+
+Now run---> login-- goto add income, in the user field, we are getting combo box which gives list 
+of emails available. But i dont want that, I want the email of logged in user only.
+Not other user's email.
+So,
+in add income, add expense, we will extract our user again.
+
+so addincome.jsp--
+
+<body>
+
+<%User user = (User)session.getAttribute("user");%>----------- wherever u require user info,extract that from user.
+<jsp:include page="sidebar.jsp"></jsp:include>
+<div id="main">
+
+
+and scroll down , we created a combo box earlier delete that--
+
+i.e. delete this code--
+
+			<select name="userid">
+			<%
+				for(User u : ul){
+			%>	
+				<option value="<%= u.getId()%>"><%=u.getEmail() %></option>		
+			<%
+				}
+			%>
+			</select>
+
+and add--
+
+we will create here a normal text field, with the values filled in it.
+
+	<tr>
+			<td>Description</td>
+			<td>
+				<textarea rows="3" cols="21" name="description" required></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>User</td>
+			<td>
+			<input type="text" name="userid" value="<%=user.getEmail() %>" readonly>-------------------
+			</td>
+		</tr>
+		<tr>
+			<td><input type="submit" value="Insert"/></td>
+			<td><input type="reset"/></td>
+		</tr>
+
+
+
+now referesh in browser and see, only the logged in email id is coming.
+
+So this same thing we will do in add expense also.
+
+add expense.jsp--
+
+<body>
+
+<%User user = (User)session.getAttribute("user");%>
+
+and
+
+<td>User</td>
+			<td>
+			<input type="text" name="userid" value="<%=user.getEmail() %>" readonly>-------------------
+			</td>
+
+infact in incomelist and expenselist also we want this user's values only.
+
+So, incomelist.jsp-- the req is going to IncomeServlet which we can see in sidebar.jsp
+And from IncomeServlet, the req is going to addincome.jsp and with us we r taking
+inc object. So along with inc object, we will take user's id also.
+
+See in the doGet()-- we r calling getIncomeList() , lly in case of expense, getExpenseList()
+what if to these funcs, we will send the id value and the func will return only those id's values.
+
+So little changes we will do.
+We will extract user from session.
+
+IncomeServlet.java---------
+
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		User user = (User)session.getAttribute("user");
+		List<Income> incList = incd.getIncomeList(user.getId());
+		session.setAttribute("incList", incList);
+		resp.sendRedirect("incomelist.jsp");
+	}
+
+IncomeDao.java----- in getIncomeList()--------
+
+public List<Income> getIncomeList(int uid){ ----------------------------------------
+		List<Income> incList = new ArrayList<Income>();
+		
+		String sql = "select * from income where user_id=?"; ---------------
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, uid);  ----------------------------------------
+			ResultSet rs = ps.executeQuery();
+
+run-- see income list
+
+now same changes we will do in expense Servlet.java and ExpenseDao.
+
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		User user = (User)session.getAttribute("user");-----------------
+		List<Expense> expList = expd.getExpenseList(user.getId());---------
+		session.setAttribute("expList", expList);
+		resp.sendRedirect("expenselist.jsp");
+	}
+	
+expenseDao---
+
+public List<Expense> getExpenseList(int uid){
+		List<Expense> expList = new ArrayList<Expense>();
+		
+		String sql = "select * from expense where user_id=?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, uid);
+			ResultSet rs = ps.executeQuery();
+			
+
+run--login---Now we r getting error in addexpense and add income case.
+
+goto addincome.jsp--
+
+instead of writing like this-- <input type="text" name="userid" value="<%=user.getEmail() %>" readonly>
+it was taking id value taht is why it is giving error.
+
+we will write like--
+
+		<td>User</td>
+			<td>
+			<input type="hidden" name="userid" value="<%= user.getId()%>"/>
+			<input type="text" value="<%=user.getEmail() %>" readonly> 
+			</td>
+
+			
+Same in addexpense.jsp--
+
+<tr>
+			<td>User</td>
+			<td>
+			<input type="hidden" name="userid" value="<%= user.getId()%>"/>
+			<input type="text" value="<%=user.getEmail() %>" readonly> 
+			</td>
+		</tr>
+
+Now run and see--
+
+Now lets say in index page, i want to show totla income
+and totalexpense.
+
+index.jsp---
+<%@page import="com.glitter.dao.IncomeDao"%>
+<%@page import="com.glitter.model.User"%>
+
+	<%if(user!=null){ %>
+	<h2>Welcome, <%=user.getEmail() %></h2>
+	<h3>Total income = <%=new IncomeDao().getTotalIncome(user) %></h3> -- passing user object
+	<%} %>
+
+Now coming to IncomeDao class---
+
+public double getTotalIncome(User user) {
+		String sql = "select sum(income) as totalincome from income where user_id=?";
+		
+		try {
+			
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, user.getId());
+			
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				return rs.getDouble("totalincome");
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+run--login -- now it is aslo giving total income.
+
+Now just like totakl income we can put total expense and total bal.
+
+So, index.jsp--
+<%@page import="com.glitter.dao.IncomeDao"%>
+<%@page import="com.glitter.dao.ExpenseDao"%>
+<%@page import="com.glitter.model.User"%>
+
+	<%if(user!=null){ %>
+		<h2>Welcome, <%=user.getEmail() %></h2>
+		
+		<h3>Total Income = <%=id.getTotalIncome(user)%></h3>
+		
+		<h3>Total Expense = <%=ed.getTotalExpense(user)%></h3>
+		
+		<h3>Final Balance = <%=id.getTotalIncome(user) - ed.getTotalExpense(user)%></h3>
+	<%} %>
+
+ExpenseDao---
+
+
+public double getTotalExpense(User user) {
+		String sql = "select sum(expense) as totalexpense from expense where user_id=?";
+		
+		try {
+			
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, user.getId());
+			
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				return rs.getDouble("totalexpense");
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 0;
+	}
+	
+
+
+
+run-- login-- see
+
+Now coming to incomelist.jsp---
+
+we have one action tab--
+<th colspan="2">Action</th>---------------------
+and
+			<td><%=i.getDescription() %></td>
+			<td><%=i.getUserId() %></td>
+			<td><a href="IncomeServlet?action=edit&id=<%=i.getId() %>">Edit</a></td>---------------
+			<td><a href="IncomeServlet?action=delete&id=<%=i.getId() %>">Delete</a></td>------------
+
+so in action we have 2 cols-- edit and delete.
+
+href="IncomeServlet?action=edit&id=<%=i.getId()%>--In case of both, edit and delete, the req is going to IncomeServlet.
+
+we r giving action value here, so along with action, we also want to take id value for performing particular action.
+
+Now the req is going as a doget() in Income Servlet, we will extract the value of the action--
+
+So, IncomeServlet.java--
+
+instead of this--
+		HttpSession session = req.getSession();
+		User user = (User)session.getAttribute("user");
+		List<Income> incList = incd.getIncomeList(user.getId());
+		session.setAttribute("incList", incList);
+		resp.sendRedirect("incomelist.jsp");
+
+write this--
+
+protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		String action = req.getParameter("action");
+		
+		if(action!=null && action.equals("delete")) {
+			int id = Integer.parseInt(req.getParameter("id"));
+			
+			boolean b = incd.deleteIncome(id); ----------------- inside IncomeDao class create this method
+			
+			if(b) {
+				resp.sendRedirect("IncomeServlet");
+			}
+		}
+		
+		else { -------------------------------------------- remember to put rest thing inside else part
+		
+			List<Income> incList = incd.getIncomeList(user.getId());
+			session.setAttribute("incList", incList);
+			resp.sendRedirect("incomelist.jsp");
+		}
+	}
+
+IncomeDao---
+
+
+public boolean deleteIncome(int id) {
+		String sql = "delete from income where id=?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			
+			int i = ps.executeUpdate();
+			
+			if(i>0) {
+				return true;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+Next is update operation---
+
+IncomeServlet--
+
+		else if(action!=null && action.equals("edit")) {
+			int id = Integer.parseInt(req.getParameter("id"));
+			
+			Income inc = incd.getIncome(id); // 1st we will extract 1 single income.For which we will create method in IncomeDao class.
+		}
+
+IncomeDao--
+
+
+	public Income getIncome(int id) {
+		String sql = "select * from income where id=?";
+		
+		try {
+			
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				Income inc = new Income();
+				inc.setId(rs.getInt("id"));
+				inc.setIncome(rs.getDouble("income"));
+				inc.setIncomeType(rs.getString("income_type"));
+				inc.setIncomeDate(rs.getDate("income_date").toString());
+				inc.setDescription(rs.getString("description"));
+				inc.setUserId(rs.getInt("user_id"));
+				
+				return inc; ------- from here the income is getting returned to incomeservlet, which we will set in session by session.setAttribute("inc", inc);
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+IncomeServlet.jsp---
+
+else if(action!=null && action.equals("edit")) {
+			int id = Integer.parseInt(req.getParameter("id"));
+			
+			Income inc = incd.getIncome(id);
+			
+			session.setAttribute("inc", inc); -------- so inc added in session object
+			
+			resp.sendRedirect("updateincome.jsp"); -------- then we will create a new page updateincome.jsp
+		}
+
+run login-- incomelist-- edit-- see url --
+
+
+So create new jsp page--> updateincome.jsp -- this page is similar to addincome.jsp
+Here we will extract the income session object i.e. inc which we setted in IncomeServlet.jsp
+
+Income inc = (Income) session.getAttribute("inc");
+
+extracting all the values inside inc,
+
+<td><input type="number" name="incomeamount" value="<%=inc.getIncome()%>" required="required"></td>
+
+U can share copied code--
+
+updateincome.jsp--
+
+<%@page import="com.glitter.model.Income"%>
+<%@page import="com.glitter.model.User"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+
+
+	<%
+	User user = (User) session.getAttribute("user");
+	Income inc = (Income) session.getAttribute("inc");
+	%>
+	<jsp:include page="sidebar.jsp"></jsp:include>
+
+	<div id="main">
+		<form action="IncomeServlet" method="post">
+			<input type="hidden" name="id" value="<%=inc.getId()%>">
+			<input type="hidden" name="action" value="updateincome">
+			<input type="hidden" name="userid" value="<%=user.getId()%>">
+			<table>
+				<tr>
+					<td>Income</td>
+					<td><input type="number" name="incomeamount" value="<%=inc.getIncome()%>" required="required"></td>
+				</tr>
+
+				<tr>
+					<td>Income Type</td>
+					<td><select name="incometype" >
+							<option><%=inc.getIncomeType() %></option>
+							<option>-----Select-----</option>
+						<option>Salary</option>
+						<option>Bonds</option>
+						<option>Others</option>
+					</select></td>
+				</tr>
+
+				<tr>
+					<td>Description</td>
+					<td><textarea rows="3" cols="20" name="description"><%=inc.getDescription() %></textarea>
+					</td>
+				</tr>
+
+				<tr>
+					<td>User</td>
+					<td><input type="text" value="<%=user.getEmail()%>" readonly></td>
+				</tr>
+
+				<tr>
+					<td><input type="submit" value="Update"></td>
+					<td><input type="reset" value="Reset"></td>
+				</tr>
+			</table>
+
+		</form>
+
+	</div>
+
+
+</body>
+</html>
+
+
+run--login--income list-- edit-- see the values are coming already filled.
+
+<form action="IncomeServlet" method="post">------ now if u will notice the req is going back into IncomeServlet as a post req.
+i.e. when we r clicking on update the req is going once again to IncomeServlet as a post req.
+
+So to distinguish, just like we did in add income case,
+i.e. in Income Servlet to distinguish betw add income req and update income req,
+
+addincome.jsp---
+
+<%List<User> ul = new UserDao().getUserList(); %>
+<form action="IncomeServlet" method="post">
+<input type="hidden" name="action" value="addincome"> -----------------------------
+	<table>
+		<tr>
+
+
+Then in our IncomeServlet in doPost()--we will read our action.
+
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		HttpSession session = request.getSession();
+		String action = request.getParameter("action");--------
+		
+		User user = (User)session.getAttribute("user");	--------	
+
+
+while in the case of updateincome-- 
+
+<input type="hidden" name="action" value="updateincome">
+
+So now in incomeservlet--
+
+so finally IncomeServlet is like--
+
+
+package com.glitter.controller;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.glitter.dao.IncomeDao;
+import com.glitter.model.Income;
+import com.glitter.model.User;
+
+@WebServlet("/IncomeServlet")
+public class IncomeServlet extends HttpServlet {
+	Income inc = new Income();
+	IncomeDao incd = new IncomeDao();
+	
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession();
+		
+		User user = (User) session.getAttribute("user");
+		
+		String action = req.getParameter("action");
+		
+		if(action!=null && action.equals("delete")) {
+			int id = Integer.parseInt(req.getParameter("id"));
+			
+			boolean b = incd.deleteIncome(id);
+			
+			if(b) {
+				resp.sendRedirect("IncomeServlet");
+			}
+		}
+		else if(action!=null && action.equals("edit")) {
+			int id = Integer.parseInt(req.getParameter("id"));
+			
+			Income inc = incd.getIncome(id);
+			
+			session.setAttribute("inc", inc);
+			
+			resp.sendRedirect("updateincome.jsp");
+		}
+		else {
+		
+			List<Income> incList = incd.getIncomeList(user.getId());
+			session.setAttribute("incList", incList);
+			resp.sendRedirect("incomelist.jsp");
+		}
+	}
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		String action = request.getParameter("action");
+		
+		User user = (User)session.getAttribute("user");		
+		
+		
+		Double income = Double.parseDouble(request.getParameter("incomeamount"));
+		String incomeType = request.getParameter("incometype");
+		String description = request.getParameter("description");
+		int userId = Integer.parseInt(request.getParameter("userid"));
+		
+		if(action!=null && action.equals("addincome")) {
+			inc.setIncome(income);
+			inc.setIncomeType(incomeType);
+			inc.setDescription(description);
+			inc.setUserId(userId);
+		
+			boolean b = new IncomeDao().addIncome(inc);
+			if(b) {
+				response.sendRedirect("index.jsp");
+			}
+			else {
+				response.sendRedirect("addincome.jsp");
+			}
+		}
+		else if(action!=null & action.equals("updateincome")) {
+			inc.setIncome(income);
+			inc.setIncomeType(incomeType);
+			inc.setDescription(description);
+			inc.setUserId(userId);
+			
+			int id = Integer.parseInt(request.getParameter("id"));
+			inc.setId(id);
+		
+			boolean b = new IncomeDao().updateIncome(inc); ------ creating func in IncomeDao
+			if(b) {
+				response.sendRedirect("IncomeServlet");
+			}
+		}
+		
+		
+	}
+
+}
+
+Then in IncomeDao.java---
+
+public boolean updateIncome(Income inc) {
+		String sql = "update income set income=?, income_type=?, description=?, user_id=? where id=?";
+		
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setDouble(1, inc.getIncome());
+			ps.setString(2, inc.getIncomeType());
+			ps.setString(3, inc.getDescription());
+			ps.setInt(4, inc.getUserId());
+			ps.setInt(5, inc.getId());
+			
+			int i = ps.executeUpdate();
+			
+			if(i>0) {
+				return true;
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+
+run---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
